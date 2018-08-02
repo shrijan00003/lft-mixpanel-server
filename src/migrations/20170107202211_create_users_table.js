@@ -12,7 +12,18 @@ export function up(knex) {
       .notNull()
       .defaultTo(knex.raw('now()'));
     table.timestamp('updated_at').notNull();
-    table.string('name').notNull();
+    table.integer('updated_by');
+    table.timestamp('deleted_at');
+    table.integer('deleted_by');
+    table.string('user_name').notNull();
+    table.string('user_email').notNull();
+    table
+      .string('user_type')
+      .notNull()
+      .defaultTo('client');
+    table.string('password').notNull();
+    table.string('refresh_token', 1000).defaultTo(null);
+    table.boolean('is_active').defaultTo(true);
   });
 }
 

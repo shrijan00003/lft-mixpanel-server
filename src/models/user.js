@@ -7,14 +7,13 @@ const TABLE_NAME = 'users';
  * User model.
  */
 class User extends bookshelf.Model {
-  
   // get hidden(){
   //   'password',
   //   'created_at',
   //   'updated_at'
   // }
-  
-  todos(){
+
+  todos() {
     return this.hasMany(Todo);
   }
 
