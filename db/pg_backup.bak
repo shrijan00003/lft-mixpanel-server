@@ -1,0 +1,586 @@
+--
+-- PostgreSQL database cluster dump
+--
+
+SET default_transaction_read_only = off;
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+
+--
+-- Roles
+--
+
+CREATE ROLE postgres;
+ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'md588d18404b5dc62170f50a64886a554c2';
+
+
+
+
+
+
+--
+-- Database creation
+--
+
+REVOKE CONNECT,TEMPORARY ON DATABASE template1 FROM PUBLIC;
+GRANT CONNECT ON DATABASE template1 TO PUBLIC;
+CREATE DATABASE todo_app WITH TEMPLATE = template0 OWNER = postgres;
+
+
+\connect postgres
+
+SET default_transaction_read_only = off;
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.4 (Ubuntu 10.4-0ubuntu0.18.04)
+-- Dumped by pg_dump version 10.4 (Ubuntu 10.4-0ubuntu0.18.04)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: DATABASE postgres; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE postgres IS 'default administrative connection database';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\connect template1
+
+SET default_transaction_read_only = off;
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.4 (Ubuntu 10.4-0ubuntu0.18.04)
+-- Dumped by pg_dump version 10.4 (Ubuntu 10.4-0ubuntu0.18.04)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: DATABASE template1; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE template1 IS 'default template for new databases';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\connect todo_app
+
+SET default_transaction_read_only = off;
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.4 (Ubuntu 10.4-0ubuntu0.18.04)
+-- Dumped by pg_dump version 10.4 (Ubuntu 10.4-0ubuntu0.18.04)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: categories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.categories (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    category_name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.categories OWNER TO postgres;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.categories_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.categories_id_seq OWNER TO postgres;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
+
+
+--
+-- Name: categories_todos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.categories_todos (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    todo_id integer,
+    category_id integer
+);
+
+
+ALTER TABLE public.categories_todos OWNER TO postgres;
+
+--
+-- Name: categories_todos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.categories_todos_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.categories_todos_id_seq OWNER TO postgres;
+
+--
+-- Name: categories_todos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.categories_todos_id_seq OWNED BY public.categories_todos.id;
+
+
+--
+-- Name: migrations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.migrations (
+    id integer NOT NULL,
+    name character varying(255),
+    batch integer,
+    migration_time timestamp with time zone
+);
+
+
+ALTER TABLE public.migrations OWNER TO postgres;
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.migrations_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.migrations_id_seq OWNER TO postgres;
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
+
+
+--
+-- Name: migrations_lock; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.migrations_lock (
+    is_locked integer
+);
+
+
+ALTER TABLE public.migrations_lock OWNER TO postgres;
+
+--
+-- Name: todos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.todos (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    title character varying(255) NOT NULL,
+    details character varying(255),
+    is_finished boolean,
+    user_id integer
+);
+
+
+ALTER TABLE public.todos OWNER TO postgres;
+
+--
+-- Name: todos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.todos_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.todos_id_seq OWNER TO postgres;
+
+--
+-- Name: todos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.todos_id_seq OWNED BY public.todos.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    email character varying(255),
+    password character varying(255),
+    refresh_token character varying(1000) DEFAULT NULL::character varying,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+
+--
+-- Name: categories_todos id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories_todos ALTER COLUMN id SET DEFAULT nextval('public.categories_todos_id_seq'::regclass);
+
+
+--
+-- Name: migrations id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.migrations_id_seq'::regclass);
+
+
+--
+-- Name: todos id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.todos ALTER COLUMN id SET DEFAULT nextval('public.todos_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.categories (id, created_at, updated_at, category_name) FROM stdin;
+1	2018-07-20 12:05:04.188-04	2018-07-20 12:05:04.188-04	programming
+2	2018-07-20 12:05:19.693-04	2018-07-20 12:05:19.693-04	fiction
+3	2018-07-20 12:05:49.676-04	2018-07-20 12:05:49.676-04	entertainment
+4	2018-07-20 12:07:15.788-04	2018-07-20 12:07:15.788-04	sports
+5	2018-07-20 12:07:26.068-04	2018-07-20 12:07:26.068-04	music
+\.
+
+
+--
+-- Data for Name: categories_todos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.categories_todos (id, created_at, updated_at, todo_id, category_id) FROM stdin;
+2	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	1	1
+3	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	2	1
+4	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	3	1
+5	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	4	1
+6	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	5	1
+7	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	6	1
+8	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	7	1
+9	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	8	5
+10	2018-07-20 12:24:02.826938-04	2018-07-20 12:24:02.822-04	9	4
+\.
+
+
+--
+-- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.migrations (id, name, batch, migration_time) FROM stdin;
+13	20170107202211_create_users_table.js	1	2018-07-19 10:15:24.298-04
+14	20180711151115_create_table_todos.js	1	2018-07-19 10:15:24.412-04
+15	20180712103748_add_column_isfinished.js	1	2018-07-19 10:15:24.417-04
+16	20180712122953_create_categories_table.js	1	2018-07-19 10:15:24.465-04
+17	20180712145402_create_categories_todos.js	1	2018-07-19 10:15:24.659-04
+18	20180714114308_add_column_password_to_user.js	1	2018-07-19 10:15:24.81-04
+19	20180715154404_add_userId_todos.js	1	2018-07-19 10:15:24.819-04
+\.
+
+
+--
+-- Data for Name: migrations_lock; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.migrations_lock (is_locked) FROM stdin;
+0
+\.
+
+
+--
+-- Data for Name: todos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.todos (id, created_at, updated_at, title, details, is_finished, user_id) FROM stdin;
+1	2018-07-19 10:27:21.221-04	2018-07-19 10:27:21.221-04	Node Js	Learn Node Js in 5 Days	\N	2
+2	2018-07-19 10:29:13.204-04	2018-07-19 10:29:13.204-04	React Js	Learn React Js in 7 Days	\N	2
+3	2018-07-19 10:30:13.382-04	2018-07-19 10:30:13.382-04	Vue Js	Learn Vue Js in 1 Day	\N	2
+4	2018-07-19 10:31:20.676-04	2018-07-19 10:31:20.676-04	Mobile Developemnt	Learn Android Js in 14 Day	\N	2
+5	2018-07-20 10:53:43.178-04	2018-07-20 10:53:43.178-04	Mobile Developemnt	Learn React Native Js in 24 Day	\N	2
+6	2018-07-20 10:56:40.274-04	2018-07-20 10:56:40.274-04	Desktop Development With Electron	Learn Desktop Developement with electron  in 24 Day	\N	2
+7	2018-07-20 11:09:43.1-04	2018-07-20 11:09:43.1-04	full stack development	Learn full stack with react and node js 	\N	2
+8	2018-07-20 12:10:53.054-04	2018-07-20 12:10:53.054-04	Learn Guitar	Learn guitar with my brother 	\N	2
+9	2018-07-20 12:15:40.21-04	2018-07-20 12:15:40.21-04	Play FutSall	Play futsall with Gokyo Guys Tomorrow at 5 PM  	\N	2
+10	2018-07-20 12:27:48.122-04	2018-07-20 12:27:48.122-04	Watch Mission Impossible	Watch Mission Impossible in Qfx 	\N	2
+11	2018-07-20 13:26:23.723-04	2018-07-20 13:26:23.723-04	Read E-commerce	Reac E- commerce for Mid-Term	\N	2
+12	2018-07-20 13:27:04.648-04	2018-07-20 13:27:04.648-04	Read E-Governance	Reac E- Governance for Mid-Term	\N	1
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, created_at, updated_at, name, email, password, refresh_token, deleted_at) FROM stdin;
+2	2018-07-19 10:21:57.117-04	2018-07-20 11:53:42.515-04	Mahesh	mahesh00003@gmail.com	$2b$10$mHgzmQyPkOxthjULl9cVkOF7ctKGbVa.tFv36zwh6Zc9EvOSK5w4u	\N	\N
+1	2018-07-19 10:19:55.068-04	2018-07-23 02:28:52.088-04	shrijan	shrijan00003@gmail.com	$2b$10$mHgzmQyPkOxthjULl9cVkOF7ctKGbVa.tFv36zwh6Zc9EvOSK5w4u	36e9c7b5-f823-4211-8337-79d23038a514	\N
+\.
+
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categories_id_seq', 5, true);
+
+
+--
+-- Name: categories_todos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categories_todos_id_seq', 10, true);
+
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.migrations_id_seq', 19, true);
+
+
+--
+-- Name: todos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.todos_id_seq', 12, true);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 2, true);
+
+
+--
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: categories_todos categories_todos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories_todos
+    ADD CONSTRAINT categories_todos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.migrations
+    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: todos todos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.todos
+    ADD CONSTRAINT todos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: categories_todos categories_todos_category_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories_todos
+    ADD CONSTRAINT categories_todos_category_id_foreign FOREIGN KEY (category_id) REFERENCES public.categories(id);
+
+
+--
+-- Name: categories_todos categories_todos_todo_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories_todos
+    ADD CONSTRAINT categories_todos_todo_id_foreign FOREIGN KEY (todo_id) REFERENCES public.todos(id);
+
+
+--
+-- Name: todos todos_user_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.todos
+    ADD CONSTRAINT todos_user_id_foreign FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- PostgreSQL database cluster dump complete
+--
+
