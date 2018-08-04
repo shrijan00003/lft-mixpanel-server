@@ -10,7 +10,7 @@ router.post('/login', async (req, res, next) => {
     res.status(200).json(response);
   } catch (err) {
     // next(err);
-    res.status(err.status).json(err.statusMessage);
+    res.status(err.status).json({ message: err.statusMessage });
   }
 });
 
