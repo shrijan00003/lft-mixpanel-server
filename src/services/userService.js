@@ -82,7 +82,7 @@ export function fetchByEmail(emailParam) {
       .fetch()
       .then(user => {
         if (!user) {
-          throw { status: 400, statusMessage: 'User Not Found' };
+          throw { status: 404, statusMessage: 'The user you entered did not matched our records.' };
         }
 
         return user;
@@ -103,7 +103,7 @@ export function updateUserRefreshToken(idParam, refreshTokenParam) {
       })
       .then(user => user.refresh)
       .catch(err => {
-        console.log('error occured while updating refresh token ' + err);
+        throw { status: 503, message: 'Cannot Update Refresh Token', err };
       });
   }
 }
@@ -119,12 +119,10 @@ export function getByIdAndToken(userId, refreshToken) {
       .fetch()
       .then(user => {
         if (!user) {
-          throw new Boom.notFound('user not found');
+          throw { status: 404, message: 'User Not Found With this Access Token and Refresh Token' };
         }
 
         return user;
       });
-  } else {
-    throw new Boom.notFound('user not found');
   }
 }

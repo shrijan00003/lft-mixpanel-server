@@ -21,12 +21,15 @@ export async function verifyUser(password, user) {
 
 export function createAccessToken(data) {
   return jwt.sign({ data }, process.env.ACCESS_TOKEN_CONST, {
-    expiresIn: 60 * 1,
+    expiresIn: 60 * 60, // 1 hour
   });
 }
 
-export function createRefreshToken() {
-  return uid();
+export function createRefreshToken(data) {
+  // return uid();
+  return jwt.sign({ data }, process.env.REFRESH_TOKEN_CONST, {
+    expiresIn: 60 * 60 * 24, // 1 DAY
+  });
 }
 
 export function verifyAccessToken(token) {
