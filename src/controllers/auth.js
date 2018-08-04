@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/login', async (req, res, next) => {
   try {
-    const response = await AuthService.checkLogin(req.body);
+    const response = await AuthService.loginUser(req.body);
     if (response.error) {
       res.status(403).json(response);
     } else {

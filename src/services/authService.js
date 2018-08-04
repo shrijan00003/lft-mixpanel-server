@@ -1,10 +1,13 @@
 import * as jwtUtil from '../utils/jwtUtils';
 import * as UserService from './userService';
 
-export async function checkLogin(bodyParam) {
+export async function loginUser(bodyParam) {
   const { email, password } = bodyParam;
 
   const user = await UserService.fetchByEmail(email);
+  if (!user) {
+    throw { status: 404, statusMessage: 'User not found' };
+  }
 
   const match = await jwtUtil.verifyUser(password, user);
 
@@ -19,9 +22,7 @@ export async function checkLogin(bodyParam) {
       id: user.id,
     };
   } else {
-    return {
-      error: 'credentials are  not matcthed',
-    };
+    throw { status: 403, statusMessage: 'Password Is Incorrect' };
   }
 }
 

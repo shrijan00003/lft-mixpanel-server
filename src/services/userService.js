@@ -35,8 +35,8 @@ export function getUser(id) {
  */
 export async function createUser(user) {
   return new User({
-    name: user.name,
-    email: user.email,
+    user_name: user.user_name,
+    user_email: user.user_email,
     password: await jwtUtils.getHash(user.password),
   })
     .save()

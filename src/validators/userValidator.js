@@ -3,20 +3,22 @@ import validate from '../utils/validate';
 import * as userService from '../services/userService';
 
 const SCHEMA = {
-  name: Joi.string()
+  user_name: Joi.string()
     .label('Name')
     .max(90)
     .required(),
-  email: Joi.string()
+  user_email: Joi.string()
     .label('Email')
     .max(255)
     .required(),
   password: Joi.string()
     .label('Password')
     .max(1000)
-    .required()  
+    .required(),
+  domain_name: Joi.string()
+    .label('Domain Name')
+    .max(1000),
 };
-
 
 /**
  * Validate create/update user request.
