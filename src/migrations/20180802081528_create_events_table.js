@@ -3,7 +3,7 @@
  * @return {Promise}
  */
 export function up(knex) {
-  return knex.schema.createTable('table_name', table => {
+  return knex.schema.createTable('events', table => {
     table.increments();
     table
       .timestamp('created_at')
@@ -18,5 +18,5 @@ export function up(knex) {
  * @return {Promise}
  */
 export function down(knex) {
-  return knex.schema.dropTable('table_name');
+  return knex.schema.dropTable('events');
 }

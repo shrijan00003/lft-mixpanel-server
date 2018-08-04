@@ -34,3 +34,7 @@ export function verifyAccessToken(token) {
 
   return res;
 }
+
+export const createClientId = () => {
+  return uid();
+};

@@ -1,5 +1,6 @@
 import bookshelf from '../db';
 import Todo from './todo';
+import ClientDetails from './clientDetails';
 
 const TABLE_NAME = 'users';
 
@@ -7,12 +8,6 @@ const TABLE_NAME = 'users';
  * User model.
  */
 class User extends bookshelf.Model {
-  // get hidden(){
-  //   'password',
-  //   'created_at',
-  //   'updated_at'
-  // }
-
   todos() {
     return this.hasMany(Todo);
   }
@@ -23,6 +18,10 @@ class User extends bookshelf.Model {
 
   get hasTimestamps() {
     return true;
+  }
+
+  clientDetails() {
+    return this.hasMany(ClientDetails);
   }
 }
 

@@ -35,8 +35,8 @@ export function getUser(id) {
  */
 export async function createUser(user) {
   return new User({
-    name: user.name,
-    email: user.email,
+    user_name: user.user_name,
+    user_email: user.user_email,
     password: await jwtUtils.getHash(user.password),
   })
     .save()
@@ -78,11 +78,11 @@ export function deleteUser(id) {
  */
 export function fetchByEmail(emailParam) {
   if (emailParam) {
-    return User.forge({ email: emailParam })
+    return User.forge({ user_email: emailParam })
       .fetch()
       .then(user => {
         if (!user) {
-          throw new Boom.notFound('User not found');
+          throw { status: 400, statusMessage: 'User Not Found' };
         }
 
         return user;
