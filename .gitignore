@@ -22,7 +22,7 @@ node_modules
 dist
 
 # Dotenv configuration
-
+.env
 
 # Visual Studio Code
 .vscode
