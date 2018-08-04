@@ -20,7 +20,7 @@ export function up(knex) {
     table
       .string('user_type')
       .notNull()
-      .defaultTo('client');
+      .defaultTo(1);
     table.string('password').notNull();
     table.string('refresh_token', 1000).defaultTo(null);
     table.boolean('is_active').defaultTo(true);
