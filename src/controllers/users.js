@@ -41,6 +41,8 @@ router.post('/', userValidator, async (req, res, next) => {
           userResponse,
           clientResponse,
         });
+      } else {
+        res.status(HttpStatus.CONFLICT).json({ msg: 'client Details can not be added' });
       }
     } else {
       res.status(HttpStatus.CONFLICT).json({ msg: 'can not create message' });

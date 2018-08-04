@@ -2,13 +2,10 @@ import * as jwtUtil from '../utils/jwtUtils';
 import * as UserService from './userService';
 
 export async function loginUser(bodyParam) {
-  const { email, password } = bodyParam;
+  const userEmail = bodyParam.user_email;
+  const { password } = bodyParam;
 
-  const user = await UserService.fetchByEmail(email);
-  if (!user) {
-    throw { status: 404, statusMessage: 'User not found' };
-  }
-
+  const user = await UserService.fetchByEmail(userEmail);
   const match = await jwtUtil.verifyUser(password, user);
 
   if (match) {

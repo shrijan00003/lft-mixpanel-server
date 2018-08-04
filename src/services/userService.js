@@ -78,11 +78,11 @@ export function deleteUser(id) {
  */
 export function fetchByEmail(emailParam) {
   if (emailParam) {
-    return User.forge({ email: emailParam })
+    return User.forge({ user_email: emailParam })
       .fetch()
       .then(user => {
         if (!user) {
-          throw new Boom.notFound('User not found');
+          throw { status: 400, statusMessage: 'User Not Found' };
         }
 
         return user;
