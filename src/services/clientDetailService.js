@@ -9,9 +9,9 @@ import ClientDetails from '../models/clientDetails';
  */
 export async function createClientDetails(userId, domainName) {
   return new ClientDetails({
-    client_id: await jwtUtils.createClientId(),
-    domain_name: domainName,
-    user_id: userId,
+    clientId: await jwtUtils.createClientId(),
+    domainName: domainName,
+    userId: userId,
   })
     .save()
     .then(clientDetails => clientDetails.refresh());

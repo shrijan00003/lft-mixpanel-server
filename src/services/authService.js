@@ -53,12 +53,14 @@ export async function refresh(id, refreshToken) {
 
 export async function logout(userId, refreshToken) {
   try {
-    await UserService.getByIdAndToken(userId, refreshToken);
-    await UserService.updateUserRefreshToken(userId, null);
+    const user = await UserService.getByIdAndToken(userId, refreshToken);
+    if (user) {
+      await UserService.updateUserRefreshToken(userId);
+    }
 
     return {
       status: 200,
-      message: 'Successfull logged out',
+      message: 'Successful logged out',
     };
   } catch (err) {
     throw err;

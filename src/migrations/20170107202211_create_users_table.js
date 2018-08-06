@@ -24,6 +24,14 @@ export function up(knex) {
     table.string('password').notNull();
     table.string('refresh_token', 1000).defaultTo(null);
     table.boolean('is_active').defaultTo(true);
+    table.string('image_url');
+    table.integer('login_attempts');
+    table.timestamp('login_attempt_date');
+    table.string('location');
+    table.string('browser');
+    table.string('device');
+    table.string('os');
+    table.string('ip_address');
   });
 }
 

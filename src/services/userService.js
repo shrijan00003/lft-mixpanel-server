@@ -34,13 +34,15 @@ export function getUser(id) {
  * @return {Promise}
  */
 export async function createUser(user) {
-  return new User({
-    user_name: user.user_name,
-    user_email: user.user_email,
+  const _user = await new User({
+    userName: user.user_name,
+    userEmail: user.user_email,
     password: await jwtUtils.getHash(user.password),
   })
     .save()
     .then(user => user.refresh());
+
+  return _user;
 }
 
 /**
@@ -95,7 +97,7 @@ export function fetchByEmail(emailParam) {
  * @param {*} idParam
  * @param {*} refreshTokenParam
  */
-export function updateUserRefreshToken(idParam, refreshTokenParam) {
+export function updateUserRefreshToken(idParam, refreshTokenParam = null) {
   if (idParam) {
     return User.forge({ id: idParam })
       .save({
