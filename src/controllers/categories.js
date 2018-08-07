@@ -1,13 +1,12 @@
 import { Router } from 'express';
 import * as categoryService from '../services/categoryService';
 
-
 const router = Router();
 /**
  * find category
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  * @description FINDING TODO FROM CATEGORIES SERVICES
  */
 
@@ -28,7 +27,6 @@ router.get('/', (req, res, next) => {
     .catch(err => next(err));
 });
 
-
 /**
  * GET /api/categories/:id
  */
@@ -42,7 +40,7 @@ router.get('/:id', (req, res, next) => {
 /**
  * POST /api/categories
  */
-router.post('/',(req, res, next) => {
+router.post('/', (req, res, next) => {
   categoryService
     .createCategory(req.body)
     .then(data => res.status(200).json({ data }))

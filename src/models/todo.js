@@ -5,18 +5,17 @@ import User from './user';
 const TABLE_NAME = 'todos';
 
 class Todo extends bookshelf.Model {
-
-/**
- * @desc single user may have multiple todos
- */
-  user(){
+  /**
+   * @desc single user may have multiple todos
+   */
+  user() {
     return this.belongsTo(User);
   }
 
-  categories(){
+  categories() {
     return this.belongsToMany(Category);
   }
-  
+
   get tableName() {
     return TABLE_NAME;
   }

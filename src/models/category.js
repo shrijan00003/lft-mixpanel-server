@@ -4,8 +4,7 @@ import Todo from './todo';
 const TABLE_NAME = 'categories';
 
 class Category extends bookshelf.Model {
-  
-  todos(){
+  todos() {
     return this.belongsToMany(Todo);
   }
   get tableName() {

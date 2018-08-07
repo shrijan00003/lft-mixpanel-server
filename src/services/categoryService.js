@@ -34,7 +34,7 @@ export function getCategory(id) {
  */
 export function createCategory(categoryParams) {
   let category = new Category({
-    category_name: categoryParams.category_name
+    category_name: categoryParams.category_name,
   });
 
   let categoryPromise = category.save();
@@ -55,7 +55,7 @@ export function updateCategory(id, category) {
   return new Category({ id })
     .save({
       updated_at: category.updated_at,
-      category_name: category.category_name
+      category_name: category.category_name,
     })
     .then(category => category.refresh());
 }
