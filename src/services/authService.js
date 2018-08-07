@@ -2,11 +2,11 @@ import * as jwtUtil from '../utils/jwtUtils';
 import * as UserService from './userService';
 
 export async function loginUser(bodyParam) {
-  const userEmail = bodyParam.user_email;
+  const userIdentity = bodyParam.user_identity;
   const { password } = bodyParam;
 
   try {
-    const user = await UserService.fetchByEmail(userEmail);
+    const user = await UserService.fetchUser(userIdentity);
     const match = await jwtUtil.verifyUser(password, user);
     const userObj = JSON.parse(JSON.stringify(user));
 
@@ -19,7 +19,7 @@ export async function loginUser(bodyParam) {
         accessToken: accessToken,
         refreshToken: refreshToken,
         id: user.id,
-        userName: userObj.userName,
+        userName: userObj.firstName + ' ' + userObj.lastName,
       };
     } else {
       throw {

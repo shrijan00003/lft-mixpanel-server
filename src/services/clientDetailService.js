@@ -7,10 +7,11 @@ import ClientDetails from '../models/clientDetails';
  * @param  {Object}  Client Details
  * @return {Promise}
  */
-export async function createClientDetails(userId, domainName) {
+export async function createClientDetails(userId, clientDetails) {
   return new ClientDetails({
     clientId: await jwtUtils.createClientId(),
-    domainName: domainName,
+    domainName: clientDetails.domain_name,
+    companyName: clientDetails.company_name,
     userId: userId,
   })
     .save()

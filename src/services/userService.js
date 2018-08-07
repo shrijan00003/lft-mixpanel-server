@@ -28,6 +28,20 @@ export function getUser(id) {
 }
 
 /**
+ * Get a user and check if it already exist
+ *
+ * @param  {Object}  userData
+ * @return {Promise}
+ */
+export function checkUsers(userData) {
+  const countUser = User.query(q => {
+    q.where('user_name', userData.user_name).orWhere('user_email', userData.user_email);
+  }).count();
+
+  return countUser;
+}
+
+/**
  * Create new user.
  *
  * @param  {Object}  user
@@ -35,8 +49,11 @@ export function getUser(id) {
  */
 export async function createUser(user) {
   const _user = await new User({
+    firstName: user.first_name,
+    lastName: user.last_name,
     userName: user.user_name,
     userEmail: user.user_email,
+    phone: user.phone,
     password: await jwtUtils.getHash(user.password),
   })
     .save()
@@ -78,13 +95,18 @@ export function deleteUser(id) {
  *
  * @param {*} emailParam
  */
-export function fetchByEmail(emailParam) {
-  if (emailParam) {
-    return User.forge({ user_email: emailParam })
+export function fetchUser(userIndetity) {
+  if (userIndetity) {
+    return User.query(q => {
+      q.where('user_email', userIndetity).orWhere('user_name', userIndetity);
+    })
       .fetch()
       .then(user => {
         if (!user) {
-          throw { status: 404, statusMessage: 'The user you entered did not matched our records.' };
+          throw {
+            status: 404,
+            statusMessage: 'The user you entered did not matched our records.',
+          };
         }
 
         return user;
@@ -121,7 +143,10 @@ export function getByIdAndToken(userId, refreshToken) {
       .fetch()
       .then(user => {
         if (!user) {
-          throw { status: 404, message: 'User Not Found With this Access Token and Refresh Token' };
+          throw {
+            status: 404,
+            message: 'User Not Found With this Access Token and Refresh Token',
+          };
         }
 
         return user;

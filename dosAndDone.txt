@@ -1,0 +1,5 @@
+> Client details userValidators doesn't include rules for some field check later
+> Login by username or email <done>
+> generate unique username by email <done>
+> If unique email is not received give response as email already in use taken <done>
+> For above solution create api for checking eamil and username uniquenes <done>

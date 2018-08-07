@@ -7,6 +7,15 @@ import { findUser, userValidator } from '../validators/userValidator';
 const router = Router();
 
 /**
+ * GET /api/users/ to check if username or email already exist
+ */
+router.get('/check', (req, res, next) => {
+  userService
+    .checkUsers(req.query)
+    .then(data => res.json({ data }))
+    .catch(err => next(err));
+});
+/**
  * GET /api/users
  */
 router.get('/', (req, res, next) => {
@@ -29,23 +38,26 @@ router.get('/:id', (req, res, next) => {
 /**
  * POST /api/users
  */
-router.post('/', userValidator, async (req, res, next) => {
+router.post('/client', userValidator, async (req, res, next) => {
   try {
-    const domainName = req.body.domain_name;
     const userResponse = await userService.createUser(req.body);
     if (userResponse) {
       const userId = userResponse.id;
-      const clientResponse = await clientDetailService.createClientDetails(userId, domainName);
+      const clientResponse = await clientDetailService.createClientDetails(userId, req.body);
       if (clientResponse) {
         res.status(HttpStatus.CREATED).json({
           userResponse,
           clientResponse,
         });
       } else {
-        res.status(HttpStatus.CONFLICT).json({ msg: 'client Details can not be added' });
+        res.status(HttpStatus.CONFLICT).json({
+          message: 'Details not added due to database server conflict. Please try again.',
+        });
       }
     } else {
-      res.status(HttpStatus.CONFLICT).json({ msg: 'can not create message' });
+      res.status(HttpStatus.CONFLICT).json({
+        message: 'Account not created due to server conflict. Please try again.',
+      });
     }
   } catch (err) {
     next(err);
