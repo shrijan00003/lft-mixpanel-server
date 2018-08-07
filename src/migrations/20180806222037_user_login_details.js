@@ -16,6 +16,8 @@ export function up(knex) {
     table.string('device');
     table.string('os');
     table.string('ip_address');
+    table.string('details');
+    table.string('status');
     table
       .integer('user_id')
       .references('id')

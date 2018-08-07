@@ -3,3 +3,5 @@
 > generate unique username by email <done>
 > If unique email is not received give response as email already in use taken <done>
 > For above solution create api for checking eamil and username uniquenes <done>
+
+> login status will be 1 if success 0 if failed <done>

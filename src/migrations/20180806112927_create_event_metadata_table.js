@@ -10,10 +10,7 @@ export function up(knex) {
       .notNull()
       .defaultTo(knex.raw('now()'));
     table.timestamp('updated_at').notNull();
-    table
-      .integer('event_id')
-      .references('id')
-      .inTable('events');
+    table.string('client_id');
     table.string('browser');
     table.string('os');
     table.string('user_id'); // create using uuid
