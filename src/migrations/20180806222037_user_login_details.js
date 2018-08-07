@@ -10,7 +10,6 @@ export function up(knex) {
       .notNull()
       .defaultTo(knex.raw('now()'));
     table.timestamp('updated_at').notNull();
-    table.integer('login_attempts');
     table.string('location');
     table.string('browser');
     table.string('device');

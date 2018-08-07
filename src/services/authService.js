@@ -1,9 +1,21 @@
 import * as jwtUtil from '../utils/jwtUtils';
 import * as UserService from './userService';
+import * as LoginDetailsService from './loginDetailsService';
 
-export async function loginUser(bodyParam) {
-  const userIdentity = bodyParam.user_identity;
-  const { password } = bodyParam;
+export async function loginUser(bodyParam, clientIp) {
+  let loginStatus = 0;
+
+  const password = bodyParam.password,
+    userIdentity = bodyParam.user_identity;
+
+  const userLoginDetails = {
+    os: bodyParam.os,
+    ip_address: clientIp,
+    device: bodyParam.device,
+    details: bodyParam.details,
+    browser: bodyParam.browser,
+    location: bodyParam.location,
+  };
 
   try {
     const user = await UserService.fetchUser(userIdentity);
@@ -11,9 +23,13 @@ export async function loginUser(bodyParam) {
     const userObj = JSON.parse(JSON.stringify(user));
 
     if (match) {
+      loginStatus = 1;
       const accessToken = jwtUtil.createAccessToken(user.id);
       const refreshToken = jwtUtil.createRefreshToken(user.id);
       await UserService.updateUserRefreshToken(user.id, refreshToken);
+
+      // Recording login success details
+      LoginDetailsService.createLoginDetails(userLoginDetails, user.id, loginStatus);
 
       return {
         accessToken: accessToken,
@@ -22,6 +38,9 @@ export async function loginUser(bodyParam) {
         userName: userObj.firstName + ' ' + userObj.lastName,
       };
     } else {
+      loginStatus = 0;
+      // Recording login failure details
+      LoginDetailsService.createLoginDetails(userLoginDetails, user.id, loginStatus);
       throw {
         status: 403,
         statusMessage: 'The password did not matched the user. Please try again.',

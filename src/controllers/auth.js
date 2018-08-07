@@ -1,12 +1,15 @@
 import { Router } from 'express';
-import * as AuthService from '../services/authService';
+import requestIp from 'request-ip';
 import { authenticate } from '../middlewares/auth';
+import * as AuthService from '../services/authService';
 
 const router = Router();
 
 router.post('/login', async (req, res, next) => {
+  const clientIp = requestIp.getClientIp(req);
+
   try {
-    const response = await AuthService.loginUser(req.body);
+    const response = await AuthService.loginUser(req.body, clientIp);
     res.status(200).json(response);
   } catch (err) {
     res.status(err.status).json({ message: err.statusMessage });
