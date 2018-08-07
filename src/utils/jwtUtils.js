@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { SALT_WORK_FACTOR } from '../constants/auth';
-import uid from 'uuid/v4';
+import uid from 'uuid/v1';
 
 const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
 // const salt = "123";

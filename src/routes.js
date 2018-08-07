@@ -6,6 +6,7 @@ import todosController from './controllers/todos';
 import categoriesController from './controllers/categories';
 import registerController from './controllers/register';
 import authController from './controllers/auth';
+import mixpanelController from './controllers/mixpanel';
 
 /**
  * Contains all API routes for the application.
@@ -73,5 +74,8 @@ router.use('/categories', categoriesController);
 router.use('/register', registerController);
 
 router.use('/auth', authController);
+
+// for mixpanels
+router.use('/mixpanel', mixpanelController);
 
 export default router;

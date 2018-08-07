@@ -35,6 +35,7 @@
       { "singleQuote": true, "bracketSpacing": true, "printWidth": 120 }
     ],
     "allow": ["warn", "error"],
-    "no-console": "off"
+    "no-console": "off",
+    "destructuring": true,
   }
 }
