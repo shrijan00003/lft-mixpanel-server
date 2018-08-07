@@ -1,7 +1,4 @@
-import bcrypt from 'bcrypt';
-import { SALT_WORK_FACTOR } from '../constants/auth';
-
-const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
+import * as Util from '../utils/jwtUtils';
 /**
  * Seed users table.
  *
@@ -10,7 +7,7 @@ const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
  * @return {Promise}
  */
 export async function seed(knex, Promise) {
-  const password = await bcrypt.hash('password', salt);
+  const password = await Util.getHash('password');
 
   return knex('users')
     .del()

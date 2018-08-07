@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { SALT_WORK_FACTOR } from '../constants/auth';
 import uid from 'uuid/v4';
 
@@ -7,14 +7,14 @@ const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
 // const salt = "123";
 
 export async function getHash(pass) {
-  const hashedOne = await bcrypt.hash(pass, salt);
+  const hashedOne = await bcrypt.hashSync(pass, salt);
 
   return hashedOne;
 }
 
 export async function verifyUser(password, user) {
   const dbPass = user.attributes.password;
-  const match = await bcrypt.compare(password, dbPass);
+  const match = await bcrypt.compareSync(password, dbPass);
 
   return match;
 }

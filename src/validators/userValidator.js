@@ -29,7 +29,6 @@ const SCHEMA = {
   company_name: Joi.string()
     .label('Company Name')
     .max(300),
-
   phone: Joi.string()
     .label('Phone Number')
     .max(300),
