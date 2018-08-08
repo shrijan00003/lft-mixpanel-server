@@ -1,3 +1,4 @@
+import User from './user';
 import bookshelf from '../db';
 
 const TABLE_NAME = 'user_login_details';
@@ -12,6 +13,10 @@ class LoginDetails extends bookshelf.Model {
 
   get hasTimestamps() {
     return true;
+  }
+
+  hasLoginDetails() {
+    return this.belongsTo(User);
   }
 }
 

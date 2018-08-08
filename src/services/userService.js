@@ -1,7 +1,6 @@
 import Boom from 'boom';
 import User from '../models/user';
 import * as jwtUtils from '../utils/jwtUtils';
-
 /**
  * Get all users.
  *
@@ -93,7 +92,7 @@ export function deleteUser(id) {
 
 /**
  *
- * @param {*} emailParam
+ * @param {*} userIndetity
  */
 export function fetchUser(userIndetity) {
   if (userIndetity) {
@@ -109,6 +108,29 @@ export function fetchUser(userIndetity) {
           };
         }
 
+        return user;
+      });
+  }
+}
+
+/**
+ * @param { string } userIndetity
+ */
+export function fetchUserLoginDetails(userIndetity, checkFromDate) {
+  if (userIndetity) {
+    return User.query(qb => {
+      qb.count('*')
+        .from('users')
+        .join('user_login_details', {
+          'users.id': 'user_login_details.user_id',
+        })
+        .where({ user_email: userIndetity })
+        .orWhere({ user_name: userIndetity })
+        .andWhere('user_login_details.created_at', '>', checkFromDate)
+        .andWhere('user_login_details.status', 0);
+    })
+      .fetch()
+      .then(user => {
         return user;
       });
   }
