@@ -6,8 +6,6 @@ import Page from '../models/page';
  * @return {Promise}
  */
 export function createNewPage(metadataId, pageObj) {
-  console.log('---------------------metada id from page model ---------------------------------', metadataId);
-
   return new Page({
     metadataId,
     name: pageObj.name,

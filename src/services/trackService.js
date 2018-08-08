@@ -6,10 +6,10 @@ import Track from '../models/track';
  * @param  {Object}  Client Details
  * @return {Promise}
  */
-export function createNewTrack(eventName, metadataId, payload) {
+export function createNewTrack(metadataId, eventName, payload) {
   return new Track({
-    eventName,
     metadataId,
+    eventName,
     payload,
   })
     .save()

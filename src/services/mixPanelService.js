@@ -35,9 +35,10 @@ export async function saveMetaData(metaDataObj) {
   }
 }
 
-export async function saveTrackData(eventName, metadataId, payload) {
+export async function saveTrackData(metadataId, rest) {
   try {
-    const res = await TrackService.createNewTrack(eventName, metadataId, payload);
+    const { eventName, payload } = rest;
+    const res = await TrackService.createNewTrack(metadataId, eventName, payload);
 
     return res;
   } catch (err) {
@@ -47,9 +48,7 @@ export async function saveTrackData(eventName, metadataId, payload) {
 
 export async function savePageData(metadataId, dataObj) {
   try {
-    console.log('------------req----------', metadataId, dataObj);
     const res = await PageService.createNewPage(metadataId, dataObj);
-    // console.log('------------res----------', res);
 
     return res;
   } catch (err) {
