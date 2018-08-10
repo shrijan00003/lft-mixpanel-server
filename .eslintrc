@@ -40,6 +40,6 @@
     ],
     "allow": ["warn", "error"],
     "no-console": "off",
-    "destructuring": true,
+    "destructuring": true
   }
 }

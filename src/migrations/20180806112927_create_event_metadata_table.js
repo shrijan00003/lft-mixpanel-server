@@ -17,7 +17,7 @@ export function up(knex) {
     table.string('ip_address');
     table.string('page_path');
     table.string('device');
-    table.string('location'); // have longitude and lattitude as serialized data
+    table.json('location').nullable(); // have longitude and lattitude as serialized data
   });
 }
 

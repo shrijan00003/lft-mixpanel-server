@@ -19,7 +19,7 @@ const logger = new winston.Logger({
     new winston.transports.Console({
       timestamp: tsFormat,
       colorize: true,
-      level: 'info',
+      level: 'debug',
     }),
     new winston.transports.DailyRotateFile({
       filename: `${logDir}/-debug.log`,

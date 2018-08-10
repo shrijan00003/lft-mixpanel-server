@@ -1,4 +1,5 @@
 import MetaData from '../models/metaData';
+import { createClientId } from '../utils/jwtUtils';
 
 /**
  * Create new Meta Data .
@@ -6,15 +7,15 @@ import MetaData from '../models/metaData';
  * @param  {Object}  Client Details
  * @return {Promise}
  */
-export function createMetaData(metaDataObj) {
+export function createMetaData(clientId = '', metaDataObj = {}) {
   return new MetaData({
-    clientId: metaDataObj.clientId,
+    clientId: clientId,
     browser: metaDataObj.browser,
     os: metaDataObj.os,
-    userId: metaDataObj.userId,
     ipAddress: metaDataObj.ipAddress,
     device: metaDataObj.device,
     location: metaDataObj.location,
+    userId: createClientId(),
   })
     .save()
     .then(metaData => metaData.refresh());

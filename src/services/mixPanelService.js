@@ -24,9 +24,9 @@ export async function indentifyClient(clientId, email) {
   }
 }
 
-export async function saveMetaData(metaDataObj) {
+export async function saveMetaData(clientId, metaDataObj) {
   try {
-    const res = await MetaDataService.createMetaData(metaDataObj);
+    const res = await MetaDataService.createMetaData(clientId, metaDataObj);
     // console.log(res);
 
     return res;
@@ -46,12 +46,38 @@ export async function saveTrackData(metadataId, rest) {
   }
 }
 
-export async function savePageData(metadataId, dataObj) {
+export async function savePageData(metadataId, rest) {
   try {
-    const res = await PageService.createNewPage(metadataId, dataObj);
+    const res = await PageService.createNewPage(metadataId, rest);
 
     return res;
   } catch (err) {
     throw err;
+  }
+}
+
+export async function getAllTracks(clientId, query) {
+  try {
+    const res = await TrackService.getTracksWithMetaData(clientId, query);
+
+    return res;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export function getAllPages(clientId, query) {
+  try {
+    const res = PageService.getPagesWithMetaData(clientId, query);
+    // console.log('response', res);
+    if (res) {
+      return res;
+    }
+  } catch (err) {
+    console.log(err);
+    throw {
+      status: 400,
+      statusMessage: 'NOT FOUND FROM MIXPANEL SERVICES',
+    };
   }
 }
