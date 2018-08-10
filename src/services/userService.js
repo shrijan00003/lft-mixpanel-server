@@ -1,6 +1,7 @@
 import Boom from 'boom';
 import User from '../models/user';
 import * as jwtUtils from '../utils/jwtUtils';
+import { getObject } from '../utils/getObject';
 /**
  * Get all users.
  *
@@ -175,3 +176,51 @@ export function getByIdAndToken(userId, refreshToken) {
       });
   }
 }
+
+/**
+ * @param {*} userId
+ */
+export function getUserClient(userId) {
+  if (userId) {
+    return User.forge({ id: userId })
+      .fetch({
+        withRelated: ['clientDetails'],
+      })
+      .then(async userData => {
+        if (!userData) {
+          throw {
+            status: 404,
+            message: 'USER NOT FOUND',
+          };
+        }
+
+        // this will return userobject from json
+        const userObject = await getObject(userData);
+
+        const clientDetails = userObject.clientDetails ? userObject.clientDetails[0] : null;
+
+        const data = {
+          userFullName: `${userObject.firstName} ${userObject.lastName}`,
+          userPhone: userObject.phone,
+          userEmail: userObject.userEmail,
+          userImage: userObject.imageUrl,
+          isclient: clientDetails ? true : false,
+          domainName: clientDetails ? clientDetails.domainName : null,
+          companyName: clientDetails ? clientDetails.companyName : null,
+          plan: clientDetails ? clientDetails.plan : null,
+          description: clientDetails ? clientDetails.description : null,
+        };
+
+        return data;
+      })
+      .catch(err => {
+        console.log(err);
+        throw {
+          status: 400,
+          message: 'ERROR OCCURED DURING FETCHING DATA',
+        };
+      });
+  }
+
+  return userId;
+} // end of getUserClient

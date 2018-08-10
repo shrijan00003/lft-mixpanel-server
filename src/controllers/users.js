@@ -3,6 +3,7 @@ import HttpStatus from 'http-status-codes';
 import * as userService from '../services/userService';
 import * as clientDetailService from '../services/clientDetailService';
 import { findUser, userValidator } from '../validators/userValidator';
+import { authenticate } from '../middlewares/auth';
 
 const router = Router();
 
@@ -10,10 +11,25 @@ const router = Router();
  * GET /api/users/ to check if username or email already exist
  */
 router.get('/check', (req, res, next) => {
+  console.log('here');
   userService
     .checkUsers(req.query)
     .then(data => res.json({ data }))
     .catch(err => next(err));
+});
+
+router.get('/profile', authenticate, async (req, res, next) => {
+  try {
+    const userProfile = await userService.getUserClient(req.userId);
+    if (userProfile) {
+      res.status(200).json({
+        userProfile,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    // res.status(err.status).json(err.statusMessage);
+  }
 });
 /**
  * GET /api/users
