@@ -29,7 +29,7 @@ router.post('/track', identyfyClient, async (req, res, next) => {
 
     if (req.identifiedClient) {
       // update metadata table
-      const savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.body.metaData);
+      const savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.clientIp, req.body.metaData);
 
       if (savedMetaData) {
         const { id } = savedMetaData;
@@ -57,7 +57,7 @@ router.post('/page', identyfyClient, async (req, res, next) => {
     const { email, ...rest } = req.body.pageData;
     console.log(email);
     if (req.identifiedClient) {
-      const savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.body.metaData);
+      const savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.clientIp, req.body.metaData);
       const { id } = savedMetaData;
       const savedPagesData = await MixPanelService.savePageData(id, rest);
       if (savedPagesData) {

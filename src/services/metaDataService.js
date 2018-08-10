@@ -7,12 +7,12 @@ import { createClientId } from '../utils/jwtUtils';
  * @param  {Object}  Client Details
  * @return {Promise}
  */
-export function createMetaData(clientId = '', metaDataObj = {}) {
+export function createMetaData(clientId = '', ipAddress = '', metaDataObj = {}) {
   return new MetaData({
     clientId: clientId,
     browser: metaDataObj.browser,
     os: metaDataObj.os,
-    ipAddress: metaDataObj.ipAddress,
+    ipAddress,
     device: metaDataObj.device,
     location: metaDataObj.location,
     userId: createClientId(),

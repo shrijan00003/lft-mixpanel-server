@@ -24,9 +24,9 @@ export async function indentifyClient(clientId, email) {
   }
 }
 
-export async function saveMetaData(clientId, metaDataObj) {
+export async function saveMetaData(clientId, clientIp, metaDataObj) {
   try {
-    const res = await MetaDataService.createMetaData(clientId, metaDataObj);
+    const res = await MetaDataService.createMetaData(clientId, clientIp, metaDataObj);
     // console.log(res);
 
     return res;

@@ -27,11 +27,15 @@ export async function getTracksWithMetaData(ClientId = '', query = {}) {
   let newDate = null;
   let isDate = false;
   let queryDate = null;
+  let isLocation = false;
   let totalData = await Track.count();
 
   // finding new date
 
-  console.log('query date at first ', query.date);
+  if (query.latitude && query.longitude) {
+    isLocation = true;
+  }
+
   if (query.date) {
     queryDate = query.date;
     const dateSplitted = queryDate.split('-');
@@ -73,6 +77,13 @@ export async function getTracksWithMetaData(ClientId = '', query = {}) {
         qb.select('*')
           .join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' })
           .whereRaw('tracks.created_at::date = ?', newDate);
+      } else if (isLocation) {
+        console.log('here');
+        qb.select('*')
+          .join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' })
+          .whereRaw('event_metadata.location ->> ? = ?', ['latitude', JSON.parse(query.latitude)])
+          .whereRaw('event_metadata.location ->> ? = ?', ['longitude', JSON.parse(query.longitude)]);
+        console.log(qb.toQuery());
       } else {
         qb.select('*').join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' });
         console.log(qb.toQuery());
