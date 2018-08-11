@@ -27,8 +27,7 @@ router.get('/profile', authenticate, async (req, res, next) => {
       });
     }
   } catch (err) {
-    console.log(err);
-    // res.status(err.status).json(err.statusMessage);
+    res.status(err.status).json(err.statusMessage);
   }
 });
 /**

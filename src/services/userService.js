@@ -205,6 +205,7 @@ export function getUserClient(userId) {
           userEmail: userObject.userEmail,
           userImage: userObject.imageUrl,
           isclient: clientDetails ? true : false,
+          clientId: clientDetails ? clientDetails.clientId : null,
           domainName: clientDetails ? clientDetails.domainName : null,
           companyName: clientDetails ? clientDetails.companyName : null,
           plan: clientDetails ? clientDetails.plan : null,
@@ -213,8 +214,8 @@ export function getUserClient(userId) {
 
         return data;
       })
-      .catch(err => {
-        console.log(err);
+      .catch(() => {
+        // console.log(err);
         throw {
           status: 400,
           message: 'ERROR OCCURED DURING FETCHING DATA',

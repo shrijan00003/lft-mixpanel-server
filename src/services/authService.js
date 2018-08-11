@@ -35,7 +35,8 @@ export async function loginUser(bodyParam, clientIp) {
         accessToken: accessToken,
         refreshToken: refreshToken,
         id: user.id,
-        userName: userObj.firstName + ' ' + userObj.lastName,
+        name: userObj.firstName + ' ' + userObj.lastName,
+        userName: userObj.userName,
       };
     } else {
       loginStatus = 0;
