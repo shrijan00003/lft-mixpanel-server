@@ -18,9 +18,12 @@ router.get('/check', (req, res, next) => {
     .catch(err => next(err));
 });
 
+/**
+ * GET /api/users/profile to get profile of the user with client details
+ */
 router.get('/profile', authenticate, async (req, res, next) => {
   try {
-    const userProfile = await userService.getUserClient(req.userId);
+    const userProfile = await userService.getUserProfile(req.userId);
     if (userProfile) {
       res.status(200).json({
         userProfile,
@@ -28,9 +31,26 @@ router.get('/profile', authenticate, async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    // res.status(err.status).json(err.statusMessage);
+    res.status(err.status).json(err.message);
   }
 });
+
+/**
+ * PUT /api/users/profile with the access token in the header
+ */
+router.put('/profile', authenticate, async (req, res, next) => {
+  try {
+    const userProfile = await userService.updateProfile(req.userId, req.body);
+    res.status(200).json({
+      message: 'User and Client Both are Updated',
+      userProfile,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json(err.message);
+  }
+});
+
 /**
  * GET /api/users
  */
@@ -93,10 +113,10 @@ router.put('/:id', findUser, userValidator, (req, res, next) => {
 /**
  * DELETE /api/users/:id
  */
-router.delete('/:id', findUser, (req, res, next) => {
+router.delete('/:id', authenticate, findUser, (req, res, next) => {
   userService
     .deleteUser(req.params.id)
-    .then(data => res.status(HttpStatus.NO_CONTENT).json({ data }))
+    .then(data => res.status(200).json({ data }))
     .catch(err => next(err));
 });
 

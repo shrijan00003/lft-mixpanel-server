@@ -2,6 +2,8 @@ import Boom from 'boom';
 import User from '../models/user';
 import * as jwtUtils from '../utils/jwtUtils';
 import { getObject } from '../utils/getObject';
+import bookshelf from '../db';
+import { updateClientProfile } from './clientServices';
 /**
  * Get all users.
  *
@@ -87,8 +89,27 @@ export function updateUser(id, user) {
  * @param  {Number|String}  id
  * @return {Promise}
  */
+// export function deleteUser(id) {
+//   return new User({ id }).fetch().then(user => user.destroy());
+// }
+
 export function deleteUser(id) {
-  return new User({ id }).fetch().then(user => user.destroy());
+  return new User({ id })
+    .save({
+      deletedAt: new Date(),
+    })
+    .then(user => user.refresh())
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 404,
+          statusMessage: 'The user you entered did not matched our records.',
+        };
+      }
+      console.log(user);
+
+      return user;
+    });
 }
 
 /**
@@ -178,11 +199,52 @@ export function getByIdAndToken(userId, refreshToken) {
 }
 
 /**
+ *
  * @param {*} userId
  */
-export function getUserClient(userId) {
+/* 
+ "userProfile": {
+        "userFullName": "Shrijan Tripathi",
+        "userPhone": "1234567890",
+        "userEmail": "shrijan00003@gmail.com",
+        "userImage": null,
+        "isclient": true,
+        "domainName": "www.abc.com",
+        "companyName": "hello world",
+        "plan": "free",
+        "description": null
+    }
+ */
+export function updateProfile(userId, body) {
+  return bookshelf.transaction(async t => {
+    await updateUserProfile(userId, body, { transaction: t });
+    await updateClientProfile(userId, body, { transcation: t });
+  });
+}
+const updateUserProfile = (userId, data, t) => {
+  return User.forge({ id: userId })
+    .save(
+      {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        user_name: data.userName,
+        phone: data.phone,
+        user_email: data.userEmail,
+        image_url: data.imageUrl,
+      },
+      t
+    )
+    .then(user => user.refresh())
+    .then(user => user)
+    .catch(err => console.log(err));
+};
+
+/**
+ * @param {*} userId
+ */
+export function getUserProfile(userId) {
   if (userId) {
-    return User.forge({ id: userId })
+    return User.forge({ id: userId, deletedAt: null })
       .fetch({
         withRelated: ['clientDetails'],
       })
