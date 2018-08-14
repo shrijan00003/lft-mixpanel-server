@@ -62,7 +62,7 @@ const updateClientDetails = (id, data, t) => {
 const fetchClientWithUserId = userId => {
   return ClientDetails.forge({})
     .query(qb => {
-      qb.select('users.id')
+      qb.select('client_user_details.id')
         .from('client_user_details')
         .join('users', { 'client_user_details.user_id': 'users.id' })
         .whereRaw('users.id = ? ', [userId]);

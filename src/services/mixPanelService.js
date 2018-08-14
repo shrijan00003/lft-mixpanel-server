@@ -3,6 +3,7 @@ import { fetchUser } from './userService';
 import * as MetaDataService from './metaDataService';
 import * as TrackService from './trackService';
 import * as PageService from './pageService';
+import * as UserService from './userService';
 
 export async function indentifyClient(clientId, email) {
   try {
@@ -80,4 +81,27 @@ export function getAllPages(clientId, query) {
       statusMessage: 'NOT FOUND FROM MIXPANEL SERVICES',
     };
   }
+}
+
+export function getMaxDevices() {
+  try {
+    const res = TrackService.getMaxUsedDevices();
+    if (res) {
+      return res;
+    }
+  } catch (err) {
+    console.log(err);
+    throw {
+      status: 400,
+      statusMessage: 'NOT FOUND FROM MIXPANEL SERVICES',
+    };
+  }
+}
+
+export async function getClientIdByUserId(userId) {
+  const clientId = await UserService.getClientId(userId);
+  console.log('client id from mixpanel service', clientId);
+  console.log(userId);
+
+  return clientId;
 }

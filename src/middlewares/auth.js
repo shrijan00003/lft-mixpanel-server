@@ -24,15 +24,4 @@ export function authenticate(req, res, next) {
       message: 'This resource is unauthorised, no access token found',
     });
   }
-
-  // try {
-  //   const tokenData = await verifyAccessToken(accessToken);
-  //   req.userId = tokenData.data;
-  //   next();
-  // } catch (err) {
-  //   res.status(401).json({
-  //     message: 'This resource is forbidden, acess key expired',
-  //     err,
-  //   });
-  // }
 }
