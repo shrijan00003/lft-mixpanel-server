@@ -26,3 +26,10 @@ export async function totalDataInTable(colName) {
 
   return total;
 }
+
+export async function getTotalUserData() {
+  const total = await MetaData.forge({}).count('user_id');
+  const thisWeek = await MetaData.forge({}).count('user_id');
+
+  return { total, thisWeek };
+}

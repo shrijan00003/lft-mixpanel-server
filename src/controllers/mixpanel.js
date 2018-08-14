@@ -78,9 +78,7 @@ router.post('/page', identyfyClient, async (req, res, next) => {
  */
 router.get('/tracks', authenticate, async (req, res, next) => {
   try {
-    console.log('useridddddddddddddddddd', req.userId);
     const clientId = await MixPanelService.getClientIdByUserId(req.userId);
-    console.log('client id from mixpanel controller', clientId);
     if (clientId) {
       const tracksWithMeta = await MixPanelService.getAllTracks(clientId, req.query);
       if (tracksWithMeta) {
@@ -94,10 +92,11 @@ router.get('/tracks', authenticate, async (req, res, next) => {
   }
 });
 
-router.get('/pages', identyfyClient, async (req, res, next) => {
+router.get('/pages', authenticate, async (req, res, next) => {
   try {
-    if (req.identifiedClient) {
-      const pagesWithMeta = await MixPanelService.getAllPages(req.clientId, req.query);
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    if (clientId) {
+      const pagesWithMeta = await MixPanelService.getAllPages(clientId, req.query);
       if (pagesWithMeta) {
         res.status(200).json(pagesWithMeta);
       }
@@ -112,9 +111,9 @@ export default router;
 /**
  * GET /api/mixpanel/tracks/devices
  */
-router.get('/tracks/devices', identyfyClient, async (req, res, next) => {
+router.get('/tracks/devices', authenticate, async (req, res, next) => {
   try {
-    if (req.identifiedClient) {
+    if (req.clientId) {
       const devices = await MixPanelService.getMaxDevices();
       if (devices) {
         res.status(200).json(devices);
@@ -122,5 +121,19 @@ router.get('/tracks/devices', identyfyClient, async (req, res, next) => {
     }
   } catch (err) {
     res.status(err.status).json({ message: err.statusMessage });
+  }
+});
+
+/**
+ * GET /api/mixpanel/total/users to get total user with count of last two weeks for comparision
+ */
+router.get('/total/users', authenticate, async (req, res, next) => {
+  try {
+    const totalUserData = await MixPanelService.getTotalUserData();
+    console.log(totalUserData);
+    res.status(200).json({ totalUserData });
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json(err.statusMessage);
   }
 });
