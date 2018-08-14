@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as MixPanelService from '../services/mixPanelService';
 import { identyfyClient } from '../middlewares/identifyClient';
+import { authenticate } from '../middlewares/auth';
 
 const router = Router();
 
@@ -76,10 +77,13 @@ router.post('/page', identyfyClient, async (req, res, next) => {
 /**
  * GET /api/mixpanel/traks
  */
-router.get('/tracks', identyfyClient, async (req, res, next) => {
+router.get('/tracks', authenticate, async (req, res, next) => {
   try {
-    if (req.identifiedClient) {
-      const tracksWithMeta = await MixPanelService.getAllTracks(req.clientId, req.query);
+    console.log('useridddddddddddddddddd', req.userId);
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    console.log('client id from mixpanel controller', clientId);
+    if (clientId) {
+      const tracksWithMeta = await MixPanelService.getAllTracks(clientId, req.query);
       if (tracksWithMeta) {
         res.status(200).json({
           tracksWithMeta,
@@ -105,3 +109,19 @@ router.get('/pages', identyfyClient, async (req, res, next) => {
 });
 
 export default router;
+
+/**
+ * GET /api/mixpanel/tracks/devices
+ */
+router.get('/tracks/devices', identyfyClient, async (req, res, next) => {
+  try {
+    if (req.identifiedClient) {
+      const devices = await MixPanelService.getMaxDevices();
+      if (devices) {
+        res.status(200).json(devices);
+      }
+    }
+  } catch (err) {
+    res.status(err.status).json({ message: err.statusMessage });
+  }
+});

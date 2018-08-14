@@ -20,3 +20,9 @@ export function createMetaData(clientId = '', ipAddress = '', metaDataObj = {}) 
     .save()
     .then(metaData => metaData.refresh());
 }
+
+export async function totalDataInTable(colName) {
+  const total = await MetaData.count(`${colName}`);
+
+  return total;
+}

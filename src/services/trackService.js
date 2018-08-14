@@ -1,5 +1,8 @@
 import Track from '../models/track';
 import { getNewDate } from '../utils/date';
+import { getObject } from '../utils/getObject';
+import { totalDataInTable } from './metaDataService';
+// import * as SQL from '../utils/sql';
 
 /**
  * Create new Track Data .
@@ -116,3 +119,26 @@ export async function getTracksWithMetaData(ClientId = '', query = {}) {
 
   return response;
 } // END OF FUNCTION
+export async function getMaxUsedDevices() {
+  const totalDevice = await totalDataInTable('device');
+  // const totalDevice = await SQL.totalDataInTable('MetaData', 'device');
+
+  return Track.forge({})
+    .query(qb => {
+      qb.select('event_metadata.device')
+        .count('event_metadata.device as countedDeivice')
+        .join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' })
+        .groupBy('event_metadata.device')
+        .orderBy('countedDeivice', 'DESC')
+        .limit('5');
+      console.log(qb.toQuery());
+    })
+    .fetchAll()
+    .then(async data => {
+      data = await getObject(data);
+      console.log(data, totalDevice);
+
+      return { data, totalDevice };
+    })
+    .catch(err => console.log(err));
+}
