@@ -1,5 +1,7 @@
 import MetaData from '../models/metaData';
 import { createClientId } from '../utils/jwtUtils';
+import { getNewDate } from '../utils/date';
+import { getObject } from '../utils/getObject';
 
 /**
  * Create new Meta Data .
@@ -28,8 +30,51 @@ export async function totalDataInTable(colName) {
 }
 
 export async function getTotalUserData() {
-  const total = await MetaData.forge({}).count('user_id');
-  const thisWeek = await MetaData.forge({}).count('user_id');
+  const WEEK_DATE = getNewDate(7);
+  const LAST_WEEK = getNewDate(14);
+  let isIncrease = false;
+  let percent = 0;
 
-  return { total, thisWeek };
+  console.log('this week ', WEEK_DATE);
+  console.log('last week ', LAST_WEEK);
+
+  const total = await MetaData.forge({}).count('user_id');
+
+  const thisWeekCount = await MetaData.forge({})
+    .query(q => {
+      q.count('user_id').where('created_at', '>', WEEK_DATE);
+      console.log('query', q.toQuery());
+    })
+    .fetch()
+    .then(async count => {
+      const countObj = await getObject(count);
+      console.log(countObj);
+
+      return countObj.count;
+    });
+
+  const lastWeekCount = await MetaData.forge({})
+    .query(q => {
+      q.count('user_id')
+        .where('created_at', '>=', LAST_WEEK)
+        .where('created_at', '<', WEEK_DATE);
+      console.log(q.toQuery());
+    })
+    .fetch()
+    .then(async count => {
+      const countObj = await getObject(count);
+      console.log(countObj);
+
+      return countObj.count;
+    });
+
+  if (thisWeekCount > lastWeekCount) {
+    isIncrease = true;
+    percent = eval(((thisWeekCount - lastWeekCount) / total) * 100);
+  } else {
+    isIncrease = false;
+    percent = eval(((lastWeekCount - thisWeekCount) / total) * 100);
+  }
+
+  return { total, thisWeekCount, lastWeekCount, isIncrease, percent };
 }
