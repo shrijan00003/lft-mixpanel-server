@@ -23,6 +23,7 @@ router.post('/identify', identyfyClient, (req, res, next) => {
  * @response status and json
  */
 router.post('/track', identyfyClient, async (req, res, next) => {
+  console.log('track called');
   try {
     const { email, ...rest } = req.body.trackData;
     console.log(email);
