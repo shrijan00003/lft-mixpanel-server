@@ -109,3 +109,9 @@ export async function getTotalUserData() {
 
   return data;
 }
+
+export async function getAverageUser() {
+  const data = await MetaDataService.averageUser();
+
+  return data;
+}

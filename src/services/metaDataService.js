@@ -1,7 +1,11 @@
 import MetaData from '../models/metaData';
 import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
-import { getObject } from '../utils/getObject';
+import bookshelf from '../db';
+import { getObject, getAverage } from '../utils/getObject';
+
+const knex = bookshelf.knex;
+let isIncrease = false;
 
 /**
  * Create new Meta Data .
@@ -32,7 +36,6 @@ export async function totalDataInTable(colName) {
 export async function getTotalUserData() {
   const WEEK_DATE = getNewDate(7);
   const LAST_WEEK = getNewDate(14);
-  let isIncrease = false;
   let percent = 0;
 
   console.log('this week ', WEEK_DATE);
@@ -40,41 +43,54 @@ export async function getTotalUserData() {
 
   const total = await MetaData.forge({}).count('user_id');
 
-  const thisWeekCount = await MetaData.forge({})
+  const byWeek = await MetaData.forge({})
     .query(q => {
-      q.count('user_id').where('created_at', '>', WEEK_DATE);
-      console.log('query', q.toQuery());
-    })
-    .fetch()
-    .then(async count => {
-      const countObj = await getObject(count);
-      console.log(countObj);
+      q.select(knex.raw(`date_trunc('week', created_at::date) as weekly`))
+        .count('user_id')
+        .groupBy('weekly')
+        .orderBy('weekly', 'DESC');
 
-      return countObj.count;
-    });
-
-  const lastWeekCount = await MetaData.forge({})
-    .query(q => {
-      q.count('user_id')
-        .where('created_at', '>=', LAST_WEEK)
-        .where('created_at', '<', WEEK_DATE);
       console.log(q.toQuery());
     })
-    .fetch()
-    .then(async count => {
-      const countObj = await getObject(count);
-      console.log(countObj);
+    .fetchAll()
+    .then(async data => {
+      const dataObj = await getObject(data);
+      console.log(dataObj);
+      const thisWeekCount = dataObj[0].count;
+      const lastWeekCount = dataObj[1].count;
 
-      return countObj.count;
+      if (parseInt(thisWeekCount) > parseInt(lastWeekCount)) {
+        isIncrease = true;
+        percent = eval(((thisWeekCount - lastWeekCount) / total) * 100);
+      } else {
+        isIncrease = false;
+        percent = eval(((lastWeekCount - thisWeekCount) / total) * 100);
+      }
+
+      return { dataObj, thisWeekCount, isIncrease, lastWeekCount, percent };
     });
 
-  if (thisWeekCount > lastWeekCount) {
-    isIncrease = true;
-    percent = eval(((thisWeekCount - lastWeekCount) / total) * 100);
-  } else {
-    isIncrease = false;
-    percent = eval(((lastWeekCount - thisWeekCount) / total) * 100);
-  }
+  return { total, byWeek };
+}
 
-  return { total, thisWeekCount, lastWeekCount, isIncrease, percent };
+export async function averageUser() {
+  const dailyUser = await MetaData.forge({})
+    .query(q => {
+      q.select(knex.raw(`date_trunc('day',created_at::date) as daily`))
+        .count('user_id')
+        .groupBy('daily')
+        .orderBy('daily', 'DESC');
+    })
+    .fetchAll()
+    .then(async data => {
+      const dataObj = await getObject(data);
+      const average = getAverage(dataObj);
+
+      const latestUserCount = dataObj[0].count;
+      const secondLatestedUserCount = dataObj[1].count;
+
+      return { dataObj, average, latestUserCount, secondLatestedUserCount };
+    });
+
+  return { dailyUser };
 }

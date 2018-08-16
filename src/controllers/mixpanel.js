@@ -130,8 +130,20 @@ router.get('/tracks/devices', authenticate, async (req, res, next) => {
 router.get('/total/users', authenticate, async (req, res, next) => {
   try {
     const totalUserData = await MixPanelService.getTotalUserData();
-    console.log(totalUserData);
-    res.status(200).json({ totalUserData });
+    res.status(200).json(totalUserData);
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json(err.statusMessage);
+  }
+});
+
+/**
+ * GET /api/mixpanel/total/users to get total user with count of last two weeks for comparision
+ */
+router.get('/average/users', authenticate, async (req, res, next) => {
+  try {
+    const averageUser = await MixPanelService.getAverageUser();
+    res.json(averageUser);
   } catch (err) {
     console.log(err);
     res.status(err.status).json(err.statusMessage);
