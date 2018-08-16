@@ -11,3 +11,5 @@ const bookshelf = bookshelfJs(knex);
 bookshelf.plugin(['virtuals', 'pagination', 'visibility', 'bookshelf-camelcase']);
 
 export default bookshelf;
+
+// export { bookshelf, knex };

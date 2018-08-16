@@ -100,8 +100,18 @@ export function getMaxDevices() {
 
 export async function getClientIdByUserId(userId) {
   const clientId = await UserService.getClientId(userId);
-  console.log('client id from mixpanel service', clientId);
-  console.log(userId);
 
   return clientId;
+}
+
+export async function getTotalUserData() {
+  const data = await MetaDataService.getTotalUserData();
+
+  return data;
+}
+
+export async function getAverageUser() {
+  const data = await MetaDataService.averageUser();
+
+  return data;
 }

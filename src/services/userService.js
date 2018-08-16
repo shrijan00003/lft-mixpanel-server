@@ -289,20 +289,17 @@ export function getUserProfile(userId) {
 } // end of getUserClient
 
 export function getClientId(userId) {
-  console.log('userid id in usre services ', userId);
-
   return User.forge({})
     .query(q => {
       q.select('client_user_details.client_id')
         .join('client_user_details', { 'users.id': 'client_user_details.user_id' })
         .where('users.id', userId);
 
-      console.log(q.toQuery());
+      // console.log(q.toQuery());
     })
     .fetch()
     .then(async data => {
       const dataObj = await getObject(data);
-      console.log(dataObj);
 
       return dataObj.clientId;
     })
