@@ -13,7 +13,10 @@ export function up(knex) {
     table.string('client_id');
     table.string('browser');
     table.string('os');
-    table.string('user_id'); // create using uuid
+    table.string('user_id');
+    table.string('user_name');
+    table.string('user_email');
+    table.string('user_info', 1000);
     table.string('ip_address');
     table.string('page_path');
     table.string('device');
