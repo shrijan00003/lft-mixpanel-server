@@ -14,16 +14,23 @@ export function seed(knex, Promise) {
           {
             updated_at: new Date(),
             client_id: 'abc123',
-            domain_name: 'www.abc.com',
+            domain_name: 'www.shrijantripathi.com.np',
             company_name: 'hello world',
             user_id: 1,
           },
           {
             updated_at: new Date(),
             client_id: 'abc1234',
-            domain_name: 'www.xyz.com',
-            company_name: 'hello Nepal',
+            domain_name: 'www.akasy.com',
+            company_name: 'Akasy world',
             user_id: 2,
+          },
+          {
+            updated_at: new Date(),
+            client_id: 'abc12345',
+            domain_name: 'www.ankita.com',
+            company_name: 'Ankita Construction',
+            user_id: 3,
           },
         ]),
       ]);

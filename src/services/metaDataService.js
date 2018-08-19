@@ -1,5 +1,5 @@
 import MetaData from '../models/metaData';
-import { createClientId } from '../utils/jwtUtils';
+// import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
 import bookshelf from '../db';
 import { getObject, getAverage } from '../utils/getObject';
@@ -15,13 +15,16 @@ let isIncrease = false;
  */
 export function createMetaData(clientId = '', ipAddress = '', metaDataObj = {}) {
   return new MetaData({
-    clientId: clientId,
-    browser: metaDataObj.browser,
-    os: metaDataObj.os,
+    clientId,
     ipAddress,
+    os: metaDataObj.os,
     device: metaDataObj.device,
+    userId: metaDataObj.userId,
+    browser: metaDataObj.browser,
     location: metaDataObj.location,
-    userId: createClientId(),
+    userName: metaDataObj.userName,
+    userEmail: metaDataObj.userEmail,
+    userInfo: JSON.stringify(metaDataObj.userInfo),
   })
     .save()
     .then(metaData => metaData.refresh());
