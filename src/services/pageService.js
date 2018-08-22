@@ -25,7 +25,7 @@ export function createNewPage(metadataId, pageObj) {
     });
 }
 
-export async function getPagesWithMetaData(clientId = '', query = {}) {
+export function getPagesWithMetaData(clientId = '', query = {}) {
   console.log(clientId, query);
 
   const sortBy = query.sort_by || 'id';
@@ -36,7 +36,7 @@ export async function getPagesWithMetaData(clientId = '', query = {}) {
   let newDate = null;
   let isDate = false;
   let queryDate = null;
-  let totalData = await Page.count();
+  // let totalData = await Page.count();
 
   // finding new date
 
@@ -55,22 +55,22 @@ export async function getPagesWithMetaData(clientId = '', query = {}) {
 
   // counting functions
 
-  if (queryDate !== null && !isDate) {
-    const total = await Page.where('pages.created_at', '>', newDate)
-      .where('pages.created_at', '<', new Date())
-      .count();
-    totalData = total;
-  } else if (queryDate !== null && isDate) {
-    const total = await Page.query(q => {
-      q.count('*').whereRaw('pages.created_at::date = ?', newDate);
-    })
-      .fetchAll()
-      .then(count => count);
-    totalData = JSON.parse(JSON.stringify(total))[0].count;
-  } else {
-    const total = await Page.count();
-    totalData = total;
-  }
+  // if (queryDate !== null && !isDate) {
+  //   const total = await Page.where('pages.created_at', '>', newDate)
+  //     .where('pages.created_at', '<', new Date())
+  //     .count();
+  //   totalData = total;
+  // } else if (queryDate !== null && isDate) {
+  //   const total = await Page.query(q => {
+  //     q.count('*').whereRaw('pages.created_at::date = ?', newDate);
+  //   })
+  //     .fetchAll()
+  //     .then(count => count);
+  //   totalData = JSON.parse(JSON.stringify(total))[0].count;
+  // } else {
+  //   const total = await Page.count();
+  //   totalData = total;
+  // }
 
   const response = Page.forge({})
     .query(q => {
@@ -101,9 +101,11 @@ export async function getPagesWithMetaData(clientId = '', query = {}) {
         };
       }
 
-      const metaData = { page, pageSize, totalData };
+      // const metaData = { page, pageSize, totalData };
 
-      return { metaData, data };
+      // return { metaData, data };
+
+      return data;
     })
     .catch(err => {
       console.log(err);
@@ -114,4 +116,51 @@ export async function getPagesWithMetaData(clientId = '', query = {}) {
     });
 
   return response;
+}
+
+export async function getPageAnalytics(clientId = '', query = {}) {
+  // const eventName = query.event_name;
+
+  const page = query.page || '1';
+  const pageSize = query.page_size || '10';
+
+  console.log('client id is ================', clientId);
+
+  const data = await Page.forge({})
+    .query(q => {
+      q.select(
+        'pages.name',
+        'pages.path',
+        'pages.referrer',
+        'pages.title',
+        'pages.url',
+        'em.browser',
+        'em.os',
+        'em.device'
+      )
+        .count('em.user_id as total_users')
+        .join('event_metadata as em', 'pages.metadata_id', 'em.id')
+        .groupBy(
+          'pages.name',
+          'pages.path',
+          'pages.referrer',
+          'pages.title',
+          'pages.url',
+          'em.os',
+          'em.browser',
+          'em.device'
+        )
+        .orderBy('total_users', 'DESC');
+
+      console.log(q.toQuery());
+    })
+    .where('em.client_id', clientId)
+    .fetchPage({
+      pageSize,
+      page,
+    })
+    .then(d => d)
+    .catch(err => console.log(`ERROR IN FETCHING DATA ${err}`));
+
+  return data;
 }
