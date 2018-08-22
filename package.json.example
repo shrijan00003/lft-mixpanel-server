@@ -61,7 +61,9 @@
     "swagger-jsdoc": "^1.9.4",
     "uuid": "^3.3.2",
     "winston": "^2.3.1",
-    "winston-daily-rotate-file": "^1.4.6",
+    "winston-daily-rotate-file": "^1.4.6"
+  },
+  "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
