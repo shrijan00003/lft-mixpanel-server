@@ -88,7 +88,9 @@ export async function getTracksWithMetaData(ClientId = '', query = {}) {
           .whereRaw('event_metadata.location ->> ? = ?', ['longitude', JSON.parse(query.longitude)]);
         console.log(qb.toQuery());
       } else {
-        qb.select('*').join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' });
+        qb.select('*').join('event_metadata', {
+          'tracks.metadata_id': 'event_metadata.id',
+        });
         console.log(qb.toQuery());
       }
     })
@@ -119,16 +121,16 @@ export async function getTracksWithMetaData(ClientId = '', query = {}) {
 
   return response;
 } // END OF FUNCTION
-export async function getMaxUsedDevices() {
-  const totalDevice = await totalDataInTable('device');
+export async function getMaxUsedDevices(col, table) {
+  const totalDevice = await totalDataInTable(col, table);
   // const totalDevice = await SQL.totalDataInTable('MetaData', 'device');
 
   return Track.forge({})
     .query(qb => {
-      qb.select('event_metadata.device')
-        .count('event_metadata.device as countedDeivice')
+      qb.select(table + '.' + col)
+        .count(table + '.' + col + ' as countedDeivice')
         .join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' })
-        .groupBy('event_metadata.device')
+        .groupBy(table + '.' + col)
         .orderBy('countedDeivice', 'DESC')
         .limit('5');
       console.log(qb.toQuery());

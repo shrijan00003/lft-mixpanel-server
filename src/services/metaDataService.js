@@ -1,4 +1,5 @@
 import MetaData from '../models/metaData';
+import Track from '../models/track';
 // import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
 import bookshelf from '../db';
@@ -30,8 +31,18 @@ export function createMetaData(clientId = '', ipAddress = '', metaDataObj = {}) 
     .then(metaData => metaData.refresh());
 }
 
-export async function totalDataInTable(colName) {
-  const total = await MetaData.count(`${colName}`);
+export async function totalDataInTable(colName, table) {
+  console.log(`${table}`, 'meta');
+  let tab;
+  if (table === 'tracks') {
+    tab = Track;
+  }
+
+  if (table === 'event_metadata') {
+    tab = MetaData;
+  }
+
+  let total = await tab.count(`${colName}`);
 
   return total;
 }
@@ -59,8 +70,10 @@ export async function getTotalUserData() {
     .then(async data => {
       const dataObj = await getObject(data);
       console.log(dataObj);
-      const thisWeekCount = dataObj[0].count;
-      const lastWeekCount = dataObj[1].count;
+
+      const thisWeekCount = dataObj[0] ? dataObj[0].count : 0;
+
+      const lastWeekCount = dataObj[1] ? dataObj[1].count : 0;
 
       if (parseInt(thisWeekCount) > parseInt(lastWeekCount)) {
         isIncrease = true;
@@ -89,8 +102,8 @@ export async function averageUser() {
       const dataObj = await getObject(data);
       const average = getAverage(dataObj);
 
-      const latestUserCount = dataObj[0].count;
-      const secondLatestedUserCount = dataObj[1].count;
+      const latestUserCount = dataObj[0] ? dataObj[0].count : 0;
+      const secondLatestedUserCount = dataObj[1] ? dataObj[1].count : 0;
 
       return { dataObj, average, latestUserCount, secondLatestedUserCount };
     });
