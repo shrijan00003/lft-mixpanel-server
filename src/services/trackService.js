@@ -131,20 +131,15 @@ export function getTracksWithMetaData(ClientId = '', query = {}) {
 
   return response;
 } // END OF FUNCTION
-
-/**
- * @function getMaxUsedDevices of particular client
- */
-export async function getMaxUsedDevices() {
-  const totalDevice = await totalDataInTable('device');
-  // const totalDevice = await SQL.totalDataInTable('MetaData', 'device');
+export async function getMaxUsedDevices(col, table) {
+  const totalDevice = await totalDataInTable(col, table);
 
   return Track.forge({})
     .query(qb => {
-      qb.select('event_metadata.device')
-        .count('event_metadata.device as countedDeivice')
+      qb.select(table + '.' + col)
+        .count(table + '.' + col + ' as countedDeivice')
         .join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' })
-        .groupBy('event_metadata.device')
+        .groupBy(table + '.' + col)
         .orderBy('countedDeivice', 'DESC')
         .limit('5');
       console.log(qb.toQuery());

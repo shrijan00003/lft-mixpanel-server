@@ -38,6 +38,7 @@ router.post('/identify', identyfyClient, async (req, res, next) => {
  * @response status and json
  */
 router.post('/track', identyfyClient, async (req, res, next) => {
+  console.log('track called');
   try {
     let id = undefined;
     let savedMetaData = undefined;
@@ -142,7 +143,7 @@ export default router;
 router.get('/tracks/devices', authenticate, async (req, res, next) => {
   try {
     if (req.userId) {
-      const devices = await MixPanelService.getMaxDevices();
+      const devices = await MixPanelService.getMaxDevices(req.query.get, req.query.table);
       if (devices) {
         res.status(200).json(devices);
       }
