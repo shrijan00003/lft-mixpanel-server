@@ -19,7 +19,7 @@
     "prettify": "prettier --single-quote --print-width 120 --write \"src/**/*.js\" \"test/**/*.js\"",
     "start:dev": "nodemon --watch .env --watch src --exec babel-node src --source-maps",
     "test:coverage": "NODE_ENV=test nyc --require babel-register --reporter lcov --reporter text mocha --recursive test",
-    "postinstall": "yarn migrate && yarn seed"
+    "postinstall": "yarn migrate"
 
   },
   "lint-staged": {
