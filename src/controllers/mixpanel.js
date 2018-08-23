@@ -142,11 +142,10 @@ export default router;
  */
 router.get('/tracks/devices', authenticate, async (req, res, next) => {
   try {
-    if (req.userId) {
-      const devices = await MixPanelService.getMaxDevices(req.query.get, req.query.table);
-      if (devices) {
-        res.status(200).json(devices);
-      }
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    const devices = await MixPanelService.getMaxDevices(clientId, req.query.get, req.query.table);
+    if (devices) {
+      res.status(200).json(devices);
     }
   } catch (err) {
     res.status(err.status).json({ message: err.statusMessage });

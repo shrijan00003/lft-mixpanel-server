@@ -32,7 +32,6 @@ export function createMetaData(clientId = '', ipAddress = '', metaDataObj = {}) 
 }
 
 export async function totalDataInTable(colName, table) {
-  console.log(`${table}`, 'meta');
   let tab;
   if (table === 'tracks') {
     tab = Track;

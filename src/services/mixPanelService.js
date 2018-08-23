@@ -83,9 +83,9 @@ export function getAllPages(clientId, query) {
   }
 }
 
-export function getMaxDevices(col, table) {
+export function getMaxDevices(clientId, col, table) {
   try {
-    const res = TrackService.getMaxUsedDevices(col, table);
+    const res = TrackService.getMaxUsedDevices(clientId, col, table);
     if (res) {
       return res;
     }

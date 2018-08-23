@@ -11,9 +11,9 @@ import { totalDataInTable } from './metaDataService';
  */
 export function createNewTrack(metadataId, eventName, payload) {
   return new Track({
-    metadataId,
-    eventName,
     payload,
+    eventName,
+    metadataId,
   })
     .save()
     .then(metaData => metaData.refresh());
@@ -22,18 +22,16 @@ export function createNewTrack(metadataId, eventName, payload) {
 export function getTracksWithMetaData(ClientId = '', query = {}) {
   console.log(ClientId, query);
 
-  const sortBy = query.sort_by || 'id';
-  const sortOrder = query.sort_order || 'ASC';
   const page = query.page || '1';
+  const sortBy = query.sort_by || 'id';
   const pageSize = query.page_size || '10';
+  const sortOrder = query.sort_order || 'ASC';
 
   let newDate = null;
   let isDate = false;
   let queryDate = null;
   let isLocation = false;
   let isEventQuery = false;
-
-  // let totalData = await Track.count();
 
   // finding new date
 
@@ -56,37 +54,17 @@ export function getTracksWithMetaData(ClientId = '', query = {}) {
       isDate = false;
     }
   }
-
-  // counting functions
-
-  // if (queryDate !== null && !isDate) {
-  //   const total = await Track.where('tracks.created_at', '>', newDate)
-  //     .where('tracks.created_at', '<', new Date())
-  //     .count();
-  //   totalData = total;
-  // } else if (queryDate !== null && isDate) {
-  //   const total = await Track.query(q => {
-  //     q.count('*').whereRaw('tracks.created_at::date = ?', newDate);
-  //   })
-  //     .fetchAll()
-  //     .then(count => count);
-  //   totalData = JSON.parse(JSON.stringify(total))[0].count;
-  // } else if (isEventQuery) {
-  //   const total = await Track.query(q => {
-  //     q.count('*').whereRaw('tracks.event_name = ? ', query.event_name);
-  //   })
-  //     .fetchAll()
-  //     .then(count => count);
-  //   console.log(JSON.stringify(total));
-  //   totalData = JSON.parse(JSON.stringify(total))[0].count;
-  // } else {
-  //   const total = await Track.count();
-  //   totalData = total;
-  // }
-
   const response = Track.forge({})
     .query(qb => {
-      qb.select('*').join('event_metadata', { 'tracks.metadata_id': 'event_metadata.id' });
+      qb.select(
+        'tracks.event_name',
+        'em.os',
+        'tracks.created_at',
+        'em.browser',
+        'em.ip_address',
+        'em.device',
+        'em.location'
+      ).join('event_metadata as em', 'tracks.metadata_id', 'em.id');
       if (queryDate !== null && !isDate) {
         qb.whereBetween('tracks.created_at', [newDate, new Date()]);
       }
@@ -94,16 +72,16 @@ export function getTracksWithMetaData(ClientId = '', query = {}) {
         qb.whereRaw('tracks.created_at::date = ?', newDate);
       }
       if (isLocation) {
-        qb.whereRaw('event_metadata.location ->> ? = ?', ['latitude', JSON.parse(query.latitude)]);
-        qb.whereRaw('event_metadata.location ->> ? = ?', ['longitude', JSON.parse(query.longitude)]);
+        qb.whereRaw('em.location ->> ? = ?', ['latitude', JSON.parse(query.latitude)]);
+        qb.whereRaw('em.location ->> ? = ?', ['longitude', JSON.parse(query.longitude)]);
       }
       if (isEventQuery) {
-        qb.where('tracks.event_name', query.event_name);
+        qb.where('tracks.event_name', 'iLIKE', `%${query.event_name}%`);
       } else {
         return;
       }
     })
-    .where('client_id', ClientId)
+    .where('em.client_id', ClientId)
     .orderBy(sortBy, sortOrder)
     .fetchPage({
       pageSize,
@@ -116,9 +94,7 @@ export function getTracksWithMetaData(ClientId = '', query = {}) {
           statusMessage: 'NOT FOUND',
         };
       }
-      // const metaData = { page, pageSize, totalData };
 
-      // return { metaData, data };
       return data;
     })
     .catch(err => {
@@ -131,7 +107,13 @@ export function getTracksWithMetaData(ClientId = '', query = {}) {
 
   return response;
 } // END OF FUNCTION
-export async function getMaxUsedDevices(col, table) {
+
+/**
+ *
+ * @param {*} col
+ * @param {*} table
+ */
+export async function getMaxUsedDevices(clientId, col, table) {
   const totalDevice = await totalDataInTable(col, table);
 
   return Track.forge({})
@@ -144,6 +126,7 @@ export async function getMaxUsedDevices(col, table) {
         .limit('5');
       console.log(qb.toQuery());
     })
+    .where('event_metadata.client_id', clientId)
     .fetchAll()
     .then(async data => {
       data = await getObject(data);
@@ -162,8 +145,6 @@ export async function getTrackAnalytics(clientId = '', query = {}) {
 
   const page = query.page || '1';
   const pageSize = query.page_size || '10';
-
-  console.log('client id is ================', clientId);
 
   const data = await Track.forge({})
     .query(q => {
