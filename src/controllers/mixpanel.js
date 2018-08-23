@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as MixPanelService from '../services/mixPanelService';
 import { identyfyClient } from '../middlewares/identifyClient';
 import { authenticate } from '../middlewares/auth';
+let crg = require('country-reverse-geocoding').country_reverse_geocoding();
 
 const router = Router();
 
@@ -11,7 +12,21 @@ const router = Router();
  */
 router.post('/identify', identyfyClient, async (req, res, next) => {
   try {
-    const savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.clientIp, req.body.metaData);
+    let metadata = req.body.metaData;
+
+    const { location } = metadata;
+
+    const country = crg.get_country(location.latitude, location.longitude);
+
+    location.countryCode = country.code;
+    location.countryName = country.name;
+
+    metadata = {
+      ...metadata,
+      location,
+    };
+
+    const savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.clientIp, metadata);
     res.status(200).json(savedMetaData);
   } catch (err) {
     res.status(err.status).json({ message: err.statusMessage });
@@ -65,8 +80,6 @@ router.post('/page', identyfyClient, async (req, res, next) => {
 
     const { metadataId } = req.body.metaData;
 
-    console.log('metadataId', metadataId);
-
     if (!metadataId) {
       savedMetaData = await MixPanelService.saveMetaData(req.clientId, req.clientIp, req.body.metaData);
       id = savedMetaData.id;
@@ -92,10 +105,11 @@ router.get('/tracks', authenticate, async (req, res, next) => {
   try {
     const clientId = await MixPanelService.getClientIdByUserId(req.userId);
     if (clientId) {
-      const tracksWithMeta = await MixPanelService.getAllTracks(clientId, req.query);
-      if (tracksWithMeta) {
+      const data = await MixPanelService.getAllTracks(clientId, req.query);
+      if (data) {
         res.status(200).json({
-          tracksWithMeta,
+          data,
+          metadata: data.pagination,
         });
       }
     }
@@ -108,9 +122,12 @@ router.get('/pages', authenticate, async (req, res, next) => {
   try {
     const clientId = await MixPanelService.getClientIdByUserId(req.userId);
     if (clientId) {
-      const pagesWithMeta = await MixPanelService.getAllPages(clientId, req.query);
-      if (pagesWithMeta) {
-        res.status(200).json(pagesWithMeta);
+      const data = await MixPanelService.getAllPages(clientId, req.query);
+      if (data) {
+        res.status(200).json({
+          data,
+          meta: data.pagination,
+        });
       }
     }
   } catch (err) {
@@ -136,13 +153,27 @@ router.get('/tracks/devices', authenticate, async (req, res, next) => {
     res.status(err.status).json({ message: err.statusMessage });
   }
 });
+router.get('/pages/paths', authenticate, async (req, res, next) => {
+  try {
+    console.log('i am ', req.query);
+    if (req.userId) {
+      const devices = await MixPanelService.getMaxPaths(req.query.get, req.query.table);
+      if (devices) {
+        res.status(200).json(devices);
+      }
+    }
+  } catch (err) {
+    res.status(err.status).json({ message: err.statusMessage });
+  }
+});
 
 /**
  * GET /api/mixpanel/total/users to get total user with count of last two weeks for comparision
  */
 router.get('/total/users', authenticate, async (req, res, next) => {
   try {
-    const totalUserData = await MixPanelService.getTotalUserData();
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    const totalUserData = await MixPanelService.getTotalUserData(clientId);
     res.status(200).json(totalUserData);
   } catch (err) {
     console.log(err);
@@ -157,6 +188,55 @@ router.get('/average/users', authenticate, async (req, res, next) => {
   try {
     const averageUser = await MixPanelService.getAverageUser();
     res.json(averageUser);
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json(err.statusMessage);
+  }
+});
+
+/**
+ * GET /api/mixpanel/dashboard to get all the metadata details to show in dashboard
+ */
+
+router.get('/dashboard', authenticate, async (req, res, next) => {
+  try {
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    const averageUser = await MixPanelService.getAverageUser(clientId);
+    const allMetadata = await MixPanelService.getAllMetaData(clientId);
+    const totalUserData = await MixPanelService.getTotalUserData(clientId);
+
+    res.json({
+      averageUser,
+      totalUserData,
+      allMetadata,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get('/tracks/analytics', authenticate, async (req, res, next) => {
+  try {
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    const data = await MixPanelService.getTrackAnalytics(clientId, req.query);
+    res.json({
+      data,
+      meta: data.pagination,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json(err.statusMessage);
+  }
+});
+
+router.get('/pages/analytics', authenticate, async (req, res, next) => {
+  try {
+    const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+    const data = await MixPanelService.getPageAnalytics(clientId, req.query);
+    res.json({
+      data,
+      meta: data.pagination,
+    });
   } catch (err) {
     console.log(err);
     res.status(err.status).json(err.statusMessage);

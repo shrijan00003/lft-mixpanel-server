@@ -97,6 +97,20 @@ export function getMaxDevices(col, table) {
     };
   }
 }
+export function getMaxPaths(col, table) {
+  try {
+    const res = PageService.getMaxUsedPaths(col, table);
+    if (res) {
+      return res;
+    }
+  } catch (err) {
+    console.log(err);
+    throw {
+      status: 400,
+      statusMessage: 'NOT FOUND FROM MIXPANEL SERVICES',
+    };
+  }
+}
 
 export async function getClientIdByUserId(userId) {
   const clientId = await UserService.getClientId(userId);
@@ -104,14 +118,32 @@ export async function getClientIdByUserId(userId) {
   return clientId;
 }
 
-export async function getTotalUserData() {
-  const data = await MetaDataService.getTotalUserData();
+export async function getTotalUserData(clientId = '') {
+  const data = await MetaDataService.getTotalUserData(clientId);
 
   return data;
 }
 
-export async function getAverageUser() {
-  const data = await MetaDataService.averageUser();
+export async function getAverageUser(clientId = '') {
+  const data = await MetaDataService.averageUser(clientId);
+
+  return data;
+}
+
+export async function getAllMetaData(clientId = '') {
+  const data = await MetaDataService.allMetaData(clientId);
+
+  return data;
+}
+
+export async function getTrackAnalytics(clientId = '', query = {}) {
+  const data = await TrackService.getTrackAnalytics(clientId, query);
+
+  return data;
+}
+
+export async function getPageAnalytics(clientId = '', query = {}) {
+  const data = await PageService.getPageAnalytics(clientId, query);
 
   return data;
 }

@@ -1,5 +1,6 @@
 import MetaData from '../models/metaData';
 import Track from '../models/track';
+import Page from '../models/page';
 // import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
 import bookshelf from '../db';
@@ -25,14 +26,14 @@ export function createMetaData(clientId = '', ipAddress = '', metaDataObj = {}) 
     location: metaDataObj.location,
     userName: metaDataObj.userName,
     userEmail: metaDataObj.userEmail,
-    userInfo: JSON.stringify(metaDataObj.userInfo),
+    userInfo: JSON.stringify(metaDataObj.userDetails),
   })
     .save()
     .then(metaData => metaData.refresh());
 }
 
 export async function totalDataInTable(colName, table) {
-  console.log(`${table}`, 'meta');
+  console.log(`${table}`, 'totaldataintable');
   let tab;
   if (table === 'tracks') {
     tab = Track;
@@ -41,13 +42,16 @@ export async function totalDataInTable(colName, table) {
   if (table === 'event_metadata') {
     tab = MetaData;
   }
+  if (table === 'pages') {
+    tab = Page;
+  }
 
   let total = await tab.count(`${colName}`);
 
   return total;
 }
 
-export async function getTotalUserData() {
+export async function getTotalUserData(clientId = '') {
   const WEEK_DATE = getNewDate(7);
   const LAST_WEEK = getNewDate(14);
   let percent = 0;
@@ -60,19 +64,18 @@ export async function getTotalUserData() {
   const byWeek = await MetaData.forge({})
     .query(q => {
       q.select(knex.raw(`date_trunc('week', created_at::date) as weekly`))
+        .whereRaw('created_at > ?', LAST_WEEK)
         .count('user_id')
         .groupBy('weekly')
         .orderBy('weekly', 'DESC');
 
       console.log(q.toQuery());
     })
+    .where('client_id', clientId)
     .fetchAll()
     .then(async data => {
       const dataObj = await getObject(data);
-      console.log(dataObj);
-
       const thisWeekCount = dataObj[0] ? dataObj[0].count : 0;
-
       const lastWeekCount = dataObj[1] ? dataObj[1].count : 0;
 
       if (parseInt(thisWeekCount) > parseInt(lastWeekCount)) {
@@ -89,14 +92,19 @@ export async function getTotalUserData() {
   return { total, byWeek };
 }
 
-export async function averageUser() {
+export async function averageUser(clientId = '') {
+  const TWO_DAYS = getNewDate(2);
   const dailyUser = await MetaData.forge({})
     .query(q => {
       q.select(knex.raw(`date_trunc('day',created_at::date) as daily`))
+        .whereRaw('created_at > ?', TWO_DAYS)
         .count('user_id')
         .groupBy('daily')
         .orderBy('daily', 'DESC');
+
+      console.log(q.toQuery());
     })
+    .where('client_id', clientId)
     .fetchAll()
     .then(async data => {
       const dataObj = await getObject(data);
@@ -109,4 +117,20 @@ export async function averageUser() {
     });
 
   return { dailyUser };
+}
+
+export async function allMetaData(clientId = '') {
+  const data = await MetaData.forge({})
+    .query(q => {
+      q.select('*')
+        .groupBy('id', 'user_id')
+        .orderBy('id', 'DESC');
+
+      console.log('query to get all metadata group by user id  ', q.toQuery());
+    })
+    .where('client_id', clientId)
+    .fetchAll()
+    .then(data => data);
+
+  return data;
 }
