@@ -13,7 +13,7 @@ export function seed(knex, Promise) {
         knex('event_metadata').insert([
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'chrome',
             os: 'android',
             user_id: 3,
@@ -25,12 +25,12 @@ export function seed(knex, Promise) {
             location: {
               latitude: 37.0902,
               longitude: 95.7129,
-              countryName: 'United States of America',
+              countryName: 'United States',
             },
           },
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'chrome',
             os: 'ios',
             user_id: 3,
@@ -42,13 +42,13 @@ export function seed(knex, Promise) {
             location: {
               latitude: 47.6062,
               longitude: 122.3321,
-              countryName: 'United States of America',
+              countryName: 'United States',
             },
           },
 
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'firefox',
             os: 'linux',
             user_id: 3,
@@ -60,12 +60,12 @@ export function seed(knex, Promise) {
             location: {
               latitude: 37.0902,
               longitude: 95.7129,
-              countryName: 'United States of America',
+              countryName: 'United States',
             },
           },
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'firefox',
             os: 'linux',
             user_id: 3,
@@ -77,12 +77,12 @@ export function seed(knex, Promise) {
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
-              countryName: 'United States of America',
+              countryName: 'United States',
             },
           },
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'safari',
             os: 'ios',
             user_id: 3,
@@ -94,12 +94,12 @@ export function seed(knex, Promise) {
             location: {
               latitude: 61.524,
               longitude: 105.3188,
-              countryName: 'Russia',
+              countryName: 'Russian Federation',
             },
           },
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'opera',
             os: 'windows',
             user_id: 3,
@@ -111,12 +111,12 @@ export function seed(knex, Promise) {
             location: {
               latitude: 55.7558,
               longitude: 37.6173,
-              countryName: 'Russia',
+              countryName: 'Russian Federation',
             },
           },
           {
             updated_at: new Date(),
-            client_id: 'abcdef',
+            client_id: 'abc123',
             browser: 'edge',
             os: 'android',
             user_id: 3,
