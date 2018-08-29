@@ -1,3 +1,4 @@
+import _ from 'lodash';
 export async function getObject(data) {
   const dataObj = await JSON.parse(JSON.stringify(data));
 
@@ -16,4 +17,16 @@ export function getAverage(obj) {
   }, 0);
 
   return average;
+}
+
+// check if empty using lodash
+
+export function isEmpty(param) {
+  return _.isEmpty(param);
+}
+
+// check if includes
+
+export function isIncludes(collection, values) {
+  return _.includes(collection, values);
 }

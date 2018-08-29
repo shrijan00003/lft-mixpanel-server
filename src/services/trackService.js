@@ -2,6 +2,9 @@ import Track from '../models/track';
 import { getNewDate } from '../utils/date';
 import { getObject } from '../utils/getObject';
 import { totalDataInTable } from './metaDataService';
+import bookshelf from '../db';
+
+const KNEX = bookshelf.knex;
 
 /**
  * Create new Track Data .
@@ -57,6 +60,8 @@ export function getTracksWithMetaData(ClientId = '', query = {}) {
   const response = Track.forge({})
     .query(qb => {
       qb.select(
+        'tracks.id as track_id',
+        'em.id as metadata_id',
         'tracks.event_name',
         'em.os',
         'tracks.created_at',
@@ -146,19 +151,16 @@ export async function getTrackAnalytics(clientId = '', query = {}) {
   const page = query.page || '1';
   const pageSize = query.page_size || '10';
 
-  const data = await Track.forge({})
+  const result = await Track.forge()
     .query(q => {
-      q.select('tracks.event_name', 'em.browser', 'em.os', 'em.device')
-        .count('em.user_id as total_users')
+      q.distinct('tracks.event_name', 'em.browser', 'em.os', 'em.device')
+        .select(KNEX.raw(`count(em.user_id) OVER (PARTITION BY tracks.event_name) AS total_users`))
         .join('event_metadata as em', 'tracks.metadata_id', 'em.id')
-        .groupBy('tracks.event_name', 'em.browser', 'em.os', 'em.device')
         .orderBy('total_users', 'DESC');
-
       if (eventName) {
-        q.where('tracks.event_name', eventName);
+        q.where('tracks.event_name', 'iLIKE', `%${eventName}%`);
       }
-
-      console.log(q.toQuery());
+      console.log('query printing', q.toQuery());
     })
     .where('em.client_id', clientId)
     .fetchPage({
@@ -168,5 +170,5 @@ export async function getTrackAnalytics(clientId = '', query = {}) {
     .then(d => d)
     .catch(err => console.log(`ERROR IN FETCHING DATA ${err}`));
 
-  return data;
+  return result;
 }

@@ -13,6 +13,13 @@ import compression from 'compression';
 import json from './middlewares/json';
 import * as errorHandler from './middlewares/errorHandler';
 
+import redis from 'redis';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+
+const redisClient = redis.createClient();
+const redisStore = require('connect-redis')(session);
+
 const app = express();
 
 const APP_PORT =
@@ -33,6 +40,19 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(errorHandler.bodyParser);
 app.use(json);
+
+// Using Session using Redis
+// Using cookie parser
+app.use(cookieParser('secretSign#143_!223'));
+app.use(
+  session({
+    secret: 'mynepal12',
+    // create new redis store.
+    store: new redisStore({ host: 'localhost', port: 6379, client: redisClient, ttl: 10000 }),
+    saveUninitialized: false,
+    resave: false,
+  })
+);
 
 // Everything in the public folder is served as static content
 app.use(express.static(path.join(__dirname, '/../public')));

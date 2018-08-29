@@ -288,6 +288,10 @@ export function getUserProfile(userId) {
   return userId;
 } // end of getUserClient
 
+/**
+ * @param userId
+ * @returns Promise <clientId>
+ */
 export function getClientId(userId) {
   return User.forge({})
     .query(q => {
