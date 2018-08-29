@@ -1,5 +1,7 @@
 import Page from '../models/page';
 import { getNewDate } from '../utils/date';
+import { getObject } from '../utils/getObject';
+import { totalDataInTable } from './metaDataService';
 
 /**
  * Create new Page .
@@ -83,7 +85,9 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
           .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
           .whereRaw('pages.created_at::date = ?', newDate);
       } else {
-        q.select('*').join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' });
+        q.select('*').join('event_metadata', {
+          'pages.metadata_id': 'event_metadata.id',
+        });
         console.log(q.toQuery());
       }
     })
@@ -116,6 +120,30 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
     });
 
   return response;
+}
+
+export async function getMaxUsedPaths(col, table) {
+  const totalDevice = await totalDataInTable(col, table);
+  // const totalDevice = await SQL.totalDataInTable('MetaData', 'device');
+
+  return Page.forge({})
+    .query(qb => {
+      qb.select(table + '.' + col)
+        .count(table + '.' + col + ' as countedDeivice')
+        .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
+        .groupBy(table + '.' + col)
+        .orderBy('countedDeivice', 'DESC')
+        .limit('5');
+    })
+
+    .fetchAll()
+    .then(async data => {
+      data = await getObject(data);
+      console.log(data, totalDevice, 'jjjjjjjjjj');
+
+      return { data, totalDevice };
+    })
+    .catch(err => console.log(err));
 }
 
 export async function getPageAnalytics(clientId = '', query = {}) {
