@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as MixPanelService from '../services/mixPanelService';
 import { identyfyClient } from '../middlewares/identifyClient';
 import { authenticate } from '../middlewares/auth';
+
 let crg = require('country-reverse-geocoding').country_reverse_geocoding();
 
 const router = Router();
@@ -10,6 +11,7 @@ const router = Router();
  * @argument req
  * @response status and jsonindentifyClient
  */
+
 router.post('/identify', identyfyClient, async (req, res, next) => {
   try {
     let metadata = req.body.metaData;

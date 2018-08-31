@@ -27,12 +27,14 @@ router.post('/login', async (req, res, next) => {
  * POST / login attempt count
  */
 router.post('/logincount', async (req, res, next) => {
+  console.log(req.body.user_identity);
   const userData = {
     userIdentity: req.body.user_identity,
   };
 
   try {
     const response = await countLoginAttempts(userData);
+    console.log(response);
     if (parseInt(response.attributes.count) >= 5) {
       throw {
         status: 403,
