@@ -34,7 +34,7 @@ export function up(knex) {
     table.string('image_url');
     table.string('password').notNull();
     table.string('refresh_token', 1000).defaultTo(null);
-    table.boolean('is_active').defaultTo(true);
+    table.boolean('is_active').defaultTo(false);
   });
 }
 
