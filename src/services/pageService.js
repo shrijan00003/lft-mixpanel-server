@@ -1,7 +1,10 @@
+import bookshelf from '../db';
 import Page from '../models/page';
 import { getNewDate } from '../utils/date';
-import { getObject } from '../utils/getObject';
-import { totalDataInTable } from './metaDataService';
+// import { getObject } from '../utils/getObject';
+// import { totalDataInTable } from './metaDataService';
+
+const KNEX = bookshelf.knex;
 
 /**
  * Create new Page .
@@ -55,25 +58,9 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
     }
   }
 
-  // counting functions
-
-  // if (queryDate !== null && !isDate) {
-  //   const total = await Page.where('pages.created_at', '>', newDate)
-  //     .where('pages.created_at', '<', new Date())
-  //     .count();
-  //   totalData = total;
-  // } else if (queryDate !== null && isDate) {
-  //   const total = await Page.query(q => {
-  //     q.count('*').whereRaw('pages.created_at::date = ?', newDate);
-  //   })
-  //     .fetchAll()
-  //     .then(count => count);
-  //   totalData = JSON.parse(JSON.stringify(total))[0].count;
-  // } else {
-  //   const total = await Page.count();
-  //   totalData = total;
-  // }
-
+  /**
+   *
+   */
   const response = Page.forge({})
     .query(q => {
       if (queryDate !== null && !isDate) {
@@ -105,10 +92,6 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
         };
       }
 
-      // const metaData = { page, pageSize, totalData };
-
-      // return { metaData, data };
-
       return data;
     })
     .catch(err => {
@@ -122,65 +105,26 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
   return response;
 }
 
-export async function getMaxUsedPaths(col, table) {
-  const totalDevice = await totalDataInTable(col, table);
-  // const totalDevice = await SQL.totalDataInTable('MetaData', 'device');
-
-  return Page.forge({})
-    .query(qb => {
-      qb.select(table + '.' + col)
-        .count(table + '.' + col + ' as countedDeivice')
-        .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
-        .groupBy(table + '.' + col)
-        .orderBy('countedDeivice', 'DESC')
-        .limit('5');
-    })
-
-    .fetchAll()
-    .then(async data => {
-      data = await getObject(data);
-      console.log(data, totalDevice, 'jjjjjjjjjj');
-
-      return { data, totalDevice };
-    })
-    .catch(err => console.log(err));
-}
-
+/**
+ *
+ */
 export async function getPageAnalytics(clientId = '', query = {}) {
-  // const eventName = query.event_name;
+  const col = query.getBy || 'title';
 
   const page = query.page || '1';
-  const pageSize = query.page_size || '10';
+  const pageSize = query.page_size || '5';
 
-  console.log('client id is ================', clientId);
-
-  const data = await Page.forge({})
+  const result = await Page.forge()
     .query(q => {
       q.select(
-        'pages.name',
-        'pages.path',
-        'pages.referrer',
-        'pages.title',
-        'pages.url',
-        'em.browser',
-        'em.os',
-        'em.device'
-      )
-        .count('em.user_id as total_users')
-        .join('event_metadata as em', 'pages.metadata_id', 'em.id')
-        .groupBy(
-          'pages.name',
-          'pages.path',
-          'pages.referrer',
-          'pages.title',
-          'pages.url',
-          'em.os',
-          'em.browser',
-          'em.device'
+        KNEX.raw(
+          `pages.${col}, max(em.browser) as max_browser, max(em.os) as max_os, max(em.device) as max_device, count(em.user_id) as total_user`
         )
-        .orderBy('total_users', 'DESC');
-
-      console.log(q.toQuery());
+      )
+        .join('event_metadata as em', 'pages.metadata_id', 'em.id')
+        .orderBy('total_user', 'DESC')
+        .groupBy(`pages.${col}`);
+      console.log('query printing', q.toQuery());
     })
     .where('em.client_id', clientId)
     .fetchPage({
@@ -190,5 +134,5 @@ export async function getPageAnalytics(clientId = '', query = {}) {
     .then(d => d)
     .catch(err => console.log(`ERROR IN FETCHING DATA ${err}`));
 
-  return data;
+  return result;
 }

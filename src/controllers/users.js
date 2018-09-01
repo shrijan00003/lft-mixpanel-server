@@ -4,6 +4,7 @@ import * as userService from '../services/userService';
 import * as clientDetailService from '../services/clientDetailService';
 import { findUser, userValidator } from '../validators/userValidator';
 import { authenticate } from '../middlewares/auth';
+// import { sendEmail } from '../middlewares/sendEmail';
 
 const router = Router();
 
@@ -73,6 +74,36 @@ router.get('/:id', (req, res, next) => {
 
 /**
  * POST /api/users
+ */
+// router.post('/client', userValidator, async (req, res, next) => {
+//   try {
+//     const userResponse = await userService.createUser(req.body);
+//     if (userResponse) {
+//       const userId = userResponse.id;
+//       const clientResponse = await clientDetailService.createClientDetails(userId, req.body);
+//       if (clientResponse) {
+//         res.status(HttpStatus.CREATED).json({
+//           userResponse,
+//           clientResponse,
+//         });
+//       } else {
+//         res.status(HttpStatus.CONFLICT).json({
+//           message: 'Details not added due to database server conflict. Please try again.',
+//         });
+//       }
+//     } else {
+//       res.status(HttpStatus.CONFLICT).json({
+//         message: 'Account not created due to server conflict. Please try again.',
+//       });
+//     }
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+
+/**
+ * POST /api/users
+ * FOR EMAIL VERIFICATION
  */
 router.post('/client', userValidator, async (req, res, next) => {
   try {
