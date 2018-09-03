@@ -305,7 +305,9 @@ export function getClientId(userId) {
   return User.forge({})
     .query(q => {
       q.select('client_user_details.client_id')
-        .join('client_user_details', { 'users.id': 'client_user_details.user_id' })
+        .join('client_user_details', {
+          'users.id': 'client_user_details.user_id',
+        })
         .where('users.id', userId);
 
       // console.log(q.toQuery());

@@ -97,6 +97,20 @@ export function getMaxDevices(clientId, col, table) {
     };
   }
 }
+export function getMaxPaths(col, table) {
+  try {
+    const res = PageService.getMaxUsedPaths(col, table);
+    if (res) {
+      return res;
+    }
+  } catch (err) {
+    console.log(err);
+    throw {
+      status: 400,
+      statusMessage: 'NOT FOUND FROM MIXPANEL SERVICES',
+    };
+  }
+}
 
 export async function getClientIdByUserId(userId) {
   const clientId = await UserService.getClientId(userId);
