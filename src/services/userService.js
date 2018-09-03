@@ -4,6 +4,8 @@ import * as jwtUtils from '../utils/jwtUtils';
 import { getObject } from '../utils/getObject';
 import bookshelf from '../db';
 import { updateClientProfile } from './clientServices';
+import HttpStatus from 'http-status-codes';
+
 /**
  * Get all users.
  *
@@ -59,7 +61,14 @@ export async function createUser(user) {
     password: await jwtUtils.getHash(user.password),
   })
     .save()
-    .then(user => user.refresh());
+    .then(user => user.refresh())
+    .catch(err => {
+      throw {
+        status: HttpStatus.CONFLICT,
+        statusMessage: 'Account not created due to server conflict. Please try again.',
+        err,
+      };
+    });
 
   return _user;
 }
@@ -310,4 +319,21 @@ export function getClientId(userId) {
       return dataObj.clientId;
     })
     .catch(err => console.error(err));
+}
+
+export function activateUser(email = '') {
+  return User.forge({ user_email: email })
+    .save({
+      isActive: true,
+    })
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 400,
+          statusMessage: 'USER NOT FOUND',
+        };
+      }
+
+      return user;
+    });
 }

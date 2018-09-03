@@ -6,33 +6,30 @@ import { identifyClient } from '../services/clientServices';
 const getAsync = promisify(client.get).bind(client);
 
 export async function identyfyClient(req, res, next) {
-  // const userInformation = client.get('clientInformation', async (err, result) => {
-  //   if (result) {
-  //     const resultObj = await JSON.parse(result);
-  //     console.log(resultObj)
-  //     // this is printing the result
-
-  //     return resultObj;
-  //   } else {
-  //     console.log('err', err);
-  //   }
-  // });
-
-  // console.log(userInformation); // this only prints true
-
-  const userInformation = await getAsync('clientInformation')
-    .then(data => {
-      return JSON.parse(data);
-    })
-    .catch(err => console.log(err));
-
-  const clientId = userInformation ? userInformation.clientId : null;
-  const email = userInformation ? userInformation.email : null;
-
-  console.log(clientId, email);
-
-  const clientIp = requestIp.getClientIp(req);
   try {
+    const { email } = req.body;
+    if (!email) {
+      throw {
+        status: 400,
+        statusMessage: 'EMAIL NOT FOUND PLEASE PROVIDE EMAIL REGISTERED',
+      };
+    }
+    const userInformation = await getAsync(email)
+      .then(data => {
+        // return JSON.parse(data);
+        return data;
+      })
+      .catch(err => console.log(err));
+
+    // const clientId = userInformation ? userInformation.clientId : null;
+    // const email = userInformation ? userInformation.email : null;
+
+    console.log(userInformation);
+    const clientId = userInformation ? userInformation : null;
+
+    console.log(clientId, email);
+
+    const clientIp = requestIp.getClientIp(req);
     const identifiedClient = await identifyClient(clientId, email);
     if (identifiedClient) {
       req.identifiedClient = identifiedClient;
@@ -42,9 +39,8 @@ export async function identyfyClient(req, res, next) {
       next();
     }
   } catch (err) {
-    res.status(401).json({
-      message: 'You are not authenticated to so',
-      err,
+    res.status(err.status).json({
+      message: err.statusMessage,
     });
   }
 }
