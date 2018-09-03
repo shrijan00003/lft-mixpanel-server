@@ -1,6 +1,8 @@
 import bookshelf from '../db';
 import Page from '../models/page';
 import { getNewDate } from '../utils/date';
+// import { getObject } from '../utils/getObject';
+// import { totalDataInTable } from './metaDataService';
 
 const KNEX = bookshelf.knex;
 
@@ -70,7 +72,9 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
           .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
           .whereRaw('pages.created_at::date = ?', newDate);
       } else {
-        q.select('*').join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' });
+        q.select('*').join('event_metadata', {
+          'pages.metadata_id': 'event_metadata.id',
+        });
         console.log(q.toQuery());
       }
     })

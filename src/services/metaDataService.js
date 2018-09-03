@@ -1,5 +1,6 @@
 import MetaData from '../models/metaData';
 import Track from '../models/track';
+import Page from '../models/page';
 // import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
 import bookshelf from '../db';
@@ -39,6 +40,9 @@ export async function totalDataInTable(colName, table) {
 
   if (table === 'event_metadata') {
     tab = MetaData;
+  }
+  if (table === 'pages') {
+    tab = Page;
   }
 
   let total = await tab.count(`${colName}`);

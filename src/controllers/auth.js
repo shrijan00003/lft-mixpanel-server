@@ -12,7 +12,6 @@ const router = Router();
  */
 router.post('/login', async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
-  console.log('login called');
 
   try {
     const response = await AuthService.loginUser(req.body, clientIp);

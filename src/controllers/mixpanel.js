@@ -201,6 +201,19 @@ router.get('/tracks/devices', authenticate, async (req, res, next) => {
     res.status(err.status).json({ message: err.statusMessage });
   }
 });
+router.get('/pages/paths', authenticate, async (req, res, next) => {
+  try {
+    console.log('i am ', req.query);
+    if (req.userId) {
+      const devices = await MixPanelService.getMaxPaths(req.query.get, req.query.table);
+      if (devices) {
+        res.status(200).json(devices);
+      }
+    }
+  } catch (err) {
+    res.status(err.status).json({ message: err.statusMessage });
+  }
+});
 
 /**
  * GET /api/mixpanel/total/users to get total user with count of last two weeks for comparision
