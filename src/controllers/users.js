@@ -4,7 +4,7 @@ import * as userService from '../services/userService';
 import * as clientDetailService from '../services/clientDetailService';
 import { findUser, userValidator } from '../validators/userValidator';
 import { authenticate } from '../middlewares/auth';
-// import { sendEmail } from '../middlewares/sendEmail';
+import { sendEmail } from '../services/mailServices';
 
 const router = Router();
 
@@ -107,14 +107,24 @@ router.get('/:id', (req, res, next) => {
  */
 router.post('/client', userValidator, async (req, res, next) => {
   try {
+    let message = undefined;
     const userResponse = await userService.createUser(req.body);
+    const email = req.body.user_email;
+
     if (userResponse) {
       const userId = userResponse.id;
       const clientResponse = await clientDetailService.createClientDetails(userId, req.body);
       if (clientResponse) {
+        const emailResponse = sendEmail(email);
+        if (emailResponse) {
+          message = `email is sent to ${email}`;
+        } else {
+          message = `message cannot sent to ${email}`;
+        }
         res.status(HttpStatus.CREATED).json({
           userResponse,
           clientResponse,
+          message,
         });
       } else {
         res.status(HttpStatus.CONFLICT).json({
@@ -128,6 +138,16 @@ router.post('/client', userValidator, async (req, res, next) => {
     }
   } catch (err) {
     next(err);
+  }
+});
+
+router.get('/verifyEmail', async (req, res, next) => {
+  try {
+    const emailToken = await req.query.verifyEmail;
+    console.log(emailToken);
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json({ message: err.statusMessage });
   }
 });
 
