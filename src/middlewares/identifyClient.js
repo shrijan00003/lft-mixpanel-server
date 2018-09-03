@@ -16,15 +16,10 @@ export async function identyfyClient(req, res, next) {
     }
     const userInformation = await getAsync(email)
       .then(data => {
-        // return JSON.parse(data);
         return data;
       })
       .catch(err => console.log(err));
 
-    // const clientId = userInformation ? userInformation.clientId : null;
-    // const email = userInformation ? userInformation.email : null;
-
-    console.log(userInformation);
     const clientId = userInformation ? userInformation : null;
 
     console.log(clientId, email);

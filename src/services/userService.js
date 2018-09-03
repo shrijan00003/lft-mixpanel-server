@@ -1,7 +1,7 @@
 import Boom from 'boom';
 import User from '../models/user';
 import * as jwtUtils from '../utils/jwtUtils';
-import { getObject } from '../utils/getObject';
+import { getObject } from '../utils/jsUtils';
 import bookshelf from '../db';
 import { updateClientProfile } from './clientServices';
 import HttpStatus from 'http-status-codes';
@@ -321,19 +321,43 @@ export function getClientId(userId) {
     .catch(err => console.error(err));
 }
 
-export function activateUser(email = '') {
-  return User.forge({ user_email: email })
+export function activateUser(id = '', email = '') {
+  return User.forge({ id, userEmail: email })
     .save({
       isActive: true,
     })
+    .then(user => user.refresh())
     .then(user => {
       if (!user) {
         throw {
-          status: 400,
+          status: 404,
           statusMessage: 'USER NOT FOUND',
         };
       }
 
       return user;
+    })
+    .catch(err => console.log(err));
+}
+
+export function checkIfVerified(userIdentity = '') {
+  return User.forge()
+    .query(q =>
+      q
+        .select('*')
+        .where('user_email', userIdentity)
+        .orWhere('user_name', userIdentity)
+        .andWhere('is_active', true)
+    )
+    .fetch()
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 400,
+          statusMessage: 'please verify account from your email and try again',
+        };
+      }
+
+      return true;
     });
 }

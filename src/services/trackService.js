@@ -1,6 +1,6 @@
 import Track from '../models/track';
 import { getNewDate } from '../utils/date';
-import { getObject } from '../utils/getObject';
+import { getObject } from '../utils/jsUtils';
 import { totalDataInTable } from './metaDataService';
 import bookshelf from '../db';
 

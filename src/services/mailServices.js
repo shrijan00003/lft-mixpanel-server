@@ -1,11 +1,11 @@
 import smtpTransport from '../utils/mailerUtil';
 import * as JWT from '../utils/jwtUtils';
-import * as userServices from './userService';
+// import * as userServices from './userService';
 
-export async function sendEmail(email) {
+export async function sendEmail(userId, email) {
   try {
     // const emailToken = querystring.stringify(await createEmailVerificationToken(email));
-    const emailToken = await JWT.createEmailVerificationToken(email);
+    const emailToken = await JWT.createEmailVerificationToken(userId, email);
 
     const host = process.env.APP_HOST.trim();
     const port = process.env.PORT.trim();
@@ -37,10 +37,6 @@ export async function sendEmail(email) {
 export async function verifyEmail(emailToken = '') {
   try {
     const res = await JWT.verifyEmail(emailToken);
-    if (res) {
-      const updatedUser = userServices.activateUser();
-      console.log(updatedUser);
-    }
 
     return res;
   } catch (err) {
