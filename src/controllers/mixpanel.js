@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/auth';
 import { identyfyClient } from '../middlewares/identifyClient';
 import * as MixPanelService from '../services/mixPanelService';
-import { CLIENT_INFORMATION } from '../constants/redisConstants';
+// import { CLIENT_INFORMATION } from '../constants/redisConstants';
 import { isEmpty } from '../utils/getObject';
 let crg = require('country-reverse-geocoding').country_reverse_geocoding();
 
@@ -16,7 +16,8 @@ router.post('/configure', async (req, res, next) => {
   try {
     if (!isEmpty(req.body)) {
       const { clientId, email } = req.body;
-      await client.set(CLIENT_INFORMATION, JSON.stringify({ clientId, email }));
+      // await client.set(CLIENT_INFORMATION, JSON.stringify({ clientId, email }));
+      await client.set(email, clientId);
       res.status(200).json({ message: 'session is configured' });
     } else {
       throw {
@@ -35,10 +36,10 @@ router.post('/configure', async (req, res, next) => {
  */
 router.post('/disconfigure', async (req, res, next) => {
   try {
-    if (client.exists(CLIENT_INFORMATION)) {
-      await client.del(CLIENT_INFORMATION, (err, result) => {
+    const { email } = req.body;
+    if (client.exists(email)) {
+      await client.del(email, (err, result) => {
         if (result === 1) {
-          console.log(res);
           res.status(200).json({ message: 'Client Information Disconfigured' });
         } else {
           res.status(403).json({ message: 'Error Occured' + err });
@@ -55,6 +56,7 @@ router.post('/disconfigure', async (req, res, next) => {
     res.status(err.status).json({ message: err.statusMessage });
   }
 });
+
 /**
  * @argument req
  * @response status and jsonindentifyClient
