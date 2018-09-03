@@ -41,3 +41,15 @@ export function verifyAccessToken(token) {
 export const createClientId = () => {
   return uid();
 };
+
+export function createEmailVerificationToken(userEmail) {
+  return jwt.sign({ userEmail }, process.env.EMAIL_VERIFICATION_CONST, {
+    expiresIn: 60 * 30, // 30 Minutes
+  });
+}
+
+export function verifyEmail(token) {
+  const res = jwt.verify(token, process.env.EMAIL_VERIFICATION_CONST);
+
+  return res;
+}
