@@ -22,7 +22,7 @@ export async function identyfyClient(req, res, next) {
 
     const clientId = userInformation ? userInformation : null;
 
-    console.log(clientId, email);
+    // console.log(clientId, email);
 
     const clientIp = requestIp.getClientIp(req);
     const identifiedClient = await identifyClient(clientId, email);
