@@ -3,10 +3,8 @@ import { promisify } from 'util';
 
 const socketIo = require('socket.io');
 const getAsync = promisify(client.get).bind(client);
-// let rooms = [];
 let liveUsers = {};
 let connections = [];
-// let liveSiteUsers = [];
 let availabeSites = [];
 
 const showLiveUsers = server => {
