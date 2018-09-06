@@ -82,16 +82,58 @@ export async function getTotalUserData(clientId = '') {
 
       if (parseInt(thisWeekCount) > parseInt(lastWeekCount)) {
         isIncrease = true;
-        percent = eval(((thisWeekCount - lastWeekCount) / total) * 100);
+        percent = eval(((thisWeekCount - lastWeekCount) / total) * 100).toFixed(2);
       } else {
         isIncrease = false;
-        percent = eval(((lastWeekCount - thisWeekCount) / total) * 100);
+        percent = eval(((lastWeekCount - thisWeekCount) / total) * 100).toFixed(2);
       }
 
       return { dataObj, thisWeekCount, isIncrease, lastWeekCount, percent };
     });
 
   return { total, byWeek };
+}
+
+export async function getMonthlyUserData(clientId = '') {
+  const weekDate = getNewDate(7);
+  const currentDate = new Date();
+  const monthlyUser = await knex.raw(`SELECT (s.dt) AS dailyData
+  , count (distinct t.id) AS totalUser
+  FROM  (
+  SELECT generate_series('${weekDate.toDateString()}', '${currentDate.toDateString()}', '1 day'::interval)::date AS dt
+  FROM   event_metadata t
+  ) s
+  left  JOIN event_metadata t ON t.created_at::date = s.dt
+  and t.client_id = '${clientId}'
+  GROUP  BY 1
+  ORDER  BY 1;`);
+
+  //   const monthlyUser = await MetaData.query(q => {
+  //     q.select(
+  //       knex.raw(`s.dt AS dailyData
+  //       , count (distinct t.id) AS totalUser
+  //  FROM  (
+  //     SELECT generate_series('2018-08-26', '2018-09-05', '1 day'::interval)::date AS dt
+  //     FROM   event_metadata t
+  //     ) s
+  //    left join on t.created_at::date = s.dt
+  //  `)
+  //     )
+  //       .groupBy('1')
+  //       .orderBy('1');
+
+  // console.log(q.toQuery());
+  // })
+  // .where('client_id', clientId)
+  // .fetchAll()
+  // .then(async data => {
+  //   const dataObj = await getObject(data);
+
+  //   return { dataObj };
+  // });
+  const dataObj = monthlyUser.rows;
+
+  return { dataObj };
 }
 
 export async function averageUser(clientId = '') {
@@ -136,3 +178,13 @@ export async function allMetaData(clientId = '') {
 
   return data;
 }
+
+// SELECT to_char(s.dt,'yyyy-mm-dd') AS dailyData
+//      , count ( distinct t.user_id) AS totalUser
+// FROM  (
+//    SELECT generate_series('2018-08-26', '2018-09-03', '1 day'::interval)::date AS dt
+//    FROM   event_metadata t
+//    ) s
+// LEFT  JOIN event_metadata t ON t.created_at::date = s.dt
+// GROUP  BY 1
+// ORDER  BY 1;

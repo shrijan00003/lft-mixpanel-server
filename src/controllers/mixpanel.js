@@ -252,11 +252,13 @@ router.get('/dashboard', authenticate, async (req, res, next) => {
     const averageUser = await MixPanelService.getAverageUser(clientId);
     const allMetadata = await MixPanelService.getAllMetaData(clientId);
     const totalUserData = await MixPanelService.getTotalUserData(clientId);
+    const monthlyUserData = await MixPanelService.getMonthlyUserData(clientId);
 
     res.json({
       averageUser,
       totalUserData,
       allMetadata,
+      monthlyUserData,
     });
   } catch (err) {
     console.log(err);
