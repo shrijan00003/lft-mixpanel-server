@@ -1,8 +1,6 @@
 import bookshelf from '../db';
 import Page from '../models/page';
 import { getNewDate } from '../utils/date';
-// import { getObject } from '../utils/getObject';
-// import { totalDataInTable } from './metaDataService';
 
 const KNEX = bookshelf.knex;
 

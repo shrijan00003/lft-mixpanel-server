@@ -3,8 +3,7 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/auth';
 import { identyfyClient } from '../middlewares/identifyClient';
 import * as MixPanelService from '../services/mixPanelService';
-// import { CLIENT_INFORMATION } from '../constants/redisConstants';
-import { isEmpty } from '../utils/getObject';
+import { isEmpty } from '../utils/jsUtils';
 let crg = require('country-reverse-geocoding').country_reverse_geocoding();
 
 const router = Router();
@@ -16,7 +15,6 @@ router.post('/configure', async (req, res, next) => {
   try {
     if (!isEmpty(req.body)) {
       const { clientId, email } = req.body;
-      // await client.set(CLIENT_INFORMATION, JSON.stringify({ clientId, email }));
       await client.set(email, clientId);
       res.status(200).json({ message: 'session is configured' });
     } else {

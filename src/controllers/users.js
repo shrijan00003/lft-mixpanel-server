@@ -16,7 +16,19 @@ router.get('/verifyEmail', async (req, res, next) => {
     const emailToken = req.query.token;
     if (emailToken) {
       const response = await MAIL.verifyEmail(emailToken);
-      res.json({ response });
+      console.log('response from email token', response);
+      const { userId, userEmail } = response;
+
+      console.log('useremail', userEmail);
+
+      if (userEmail) {
+        const activatedUser = await userService.activateUser(userId, userEmail);
+        if (activatedUser) {
+          res.redirect('http://localhost:3000/login');
+        } else {
+          res.redirect('http://localhost:3000/signup');
+        }
+      }
     }
   } catch (err) {
     console.log(err);
@@ -101,7 +113,7 @@ router.post('/client', userValidator, async (req, res, next) => {
       const userId = userResponse.id;
       const clientResponse = await clientDetailService.createClientDetails(userId, req.body);
       if (clientResponse) {
-        const emailResponse = MAIL.sendEmail(email);
+        const emailResponse = MAIL.sendEmail(userId, email);
         if (emailResponse) {
           message = `email is sent to ${email}`;
         } else {
