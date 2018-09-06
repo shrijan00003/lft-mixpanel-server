@@ -50,6 +50,11 @@ const showLiveUsers = server => {
             if (users) {
               liveUsers = JSON.parse(users);
               if (liveUsers[disconnectedSocket]) {
+                io.to(appClient).emit(
+                  'liveUsersActivity',
+                  'User with id ' + liveUsers[disconnectedSocket].userId + ' disconnected.'
+                );
+
                 delete liveUsers[disconnectedSocket];
                 client.SET(appClient, JSON.stringify(liveUsers));
                 io.to(appClient).emit('liveUsers', Object.keys(liveUsers).length);
@@ -93,12 +98,24 @@ const showLiveUsers = server => {
               liveUsers = Object.assign(JSON.parse(res));
             }
 
+            // let userExists = false;
+            // if (Object.keys(liveUsers).length > 0) {
+            //   for (let key in liveUsers) {
+            //     if(liveUsers[key].userId === userId) {
+            //       userExists = true;
+            //       break;
+            //     }
+            //   }
+            // }
+
+            // if (!userExists) {
             liveUsers[socketId] = {
               userId,
               userName,
               userEmail,
             };
             client.SET(appClient, JSON.stringify(liveUsers));
+            // }
           });
         } catch (err) {
           console.log(err);
@@ -108,6 +125,7 @@ const showLiveUsers = server => {
       // SENDING DATA TO THE CONNECTED ROOMS
       io.sockets.emit('testSocketMsg', { msg: liveUsers });
       io.to(appClient).emit('liveUsers', Object.keys(liveUsers).length);
+      io.to(appClient).emit('liveUsersActivity', 'New user joined with id ' + userId + '.');
     });
   });
 };
