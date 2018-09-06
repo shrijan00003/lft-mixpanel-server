@@ -1,5 +1,6 @@
 import * as jwtUtils from '../utils/jwtUtils';
 import ClientDetails from '../models/clientDetails';
+import HttpStatus from 'http-status-codes';
 
 /**
  * Create new Client Details.
@@ -15,5 +16,12 @@ export async function createClientDetails(userId, clientDetails) {
     userId: userId,
   })
     .save()
-    .then(clientDetails => clientDetails.refresh());
+    .then(clientDetails => clientDetails.refresh())
+    .catch(err => {
+      throw {
+        status: HttpStatus.CONFLICT,
+        statusMessage: 'Details not added due to database server conflict. Please try again.',
+        err,
+      };
+    });
 }

@@ -4,7 +4,7 @@ import Page from '../models/page';
 // import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
 import bookshelf from '../db';
-import { getObject, getAverage } from '../utils/getObject';
+import { getObject, getAverage } from '../utils/jsUtils';
 
 const knex = bookshelf.knex;
 let isIncrease = false;

@@ -1,9 +1,11 @@
 import Boom from 'boom';
 import User from '../models/user';
 import * as jwtUtils from '../utils/jwtUtils';
-import { getObject } from '../utils/getObject';
+import { getObject } from '../utils/jsUtils';
 import bookshelf from '../db';
 import { updateClientProfile } from './clientServices';
+import HttpStatus from 'http-status-codes';
+
 /**
  * Get all users.
  *
@@ -59,7 +61,14 @@ export async function createUser(user) {
     password: await jwtUtils.getHash(user.password),
   })
     .save()
-    .then(user => user.refresh());
+    .then(user => user.refresh())
+    .catch(err => {
+      throw {
+        status: HttpStatus.CONFLICT,
+        statusMessage: 'Account not created due to server conflict. Please try again.',
+        err,
+      };
+    });
 
   return _user;
 }
@@ -310,4 +319,45 @@ export function getClientId(userId) {
       return dataObj.clientId;
     })
     .catch(err => console.error(err));
+}
+
+export function activateUser(id = '', email = '') {
+  return User.forge({ id, userEmail: email })
+    .save({
+      isActive: true,
+    })
+    .then(user => user.refresh())
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 404,
+          statusMessage: 'USER NOT FOUND',
+        };
+      }
+
+      return user;
+    })
+    .catch(err => console.log(err));
+}
+
+export function checkIfVerified(userIdentity = '') {
+  return User.forge()
+    .query(q =>
+      q
+        .select('*')
+        .where('user_email', userIdentity)
+        .orWhere('user_name', userIdentity)
+        .andWhere('is_active', true)
+    )
+    .fetch()
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 400,
+          statusMessage: 'please verify account from your email and try again',
+        };
+      }
+
+      return true;
+    });
 }

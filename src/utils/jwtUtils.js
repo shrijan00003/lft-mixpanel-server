@@ -42,9 +42,9 @@ export const createClientId = () => {
   return uid();
 };
 
-export function createEmailVerificationToken(userEmail) {
-  return jwt.sign({ userEmail }, process.env.EMAIL_VERIFICATION_CONST, {
-    expiresIn: 60 * 30, // 30 Minutes
+export function createEmailVerificationToken(userId, userEmail) {
+  return jwt.sign({ userId, userEmail }, process.env.EMAIL_VERIFICATION_CONST, {
+    expiresIn: 60 * 60 * 24 * 30, // 30 DAYS
   });
 }
 

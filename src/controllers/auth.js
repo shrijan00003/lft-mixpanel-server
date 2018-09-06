@@ -3,6 +3,7 @@ import requestIp from 'request-ip';
 import { authenticate } from '../middlewares/auth';
 import * as AuthService from '../services/authService';
 import { countLoginAttempts } from '../services/loginDetailsService';
+import { isVerified } from '../middlewares/isVerified';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ const router = Router();
  *
  * POST / login user
  */
-router.post('/login', async (req, res, next) => {
+router.post('/login', isVerified, async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
 
   try {

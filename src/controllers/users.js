@@ -4,15 +4,42 @@ import * as userService from '../services/userService';
 import * as clientDetailService from '../services/clientDetailService';
 import { findUser, userValidator } from '../validators/userValidator';
 import { authenticate } from '../middlewares/auth';
-import { sendEmail } from '../services/mailServices';
+import * as MAIL from '../services/mailServices';
 
 const router = Router();
+
+/**
+ *
+ */
+router.get('/verifyEmail', async (req, res, next) => {
+  try {
+    const emailToken = req.query.token;
+    if (emailToken) {
+      const response = await MAIL.verifyEmail(emailToken);
+      console.log('response from email token', response);
+      const { userId, userEmail } = response;
+
+      console.log('useremail', userEmail);
+
+      if (userEmail) {
+        const activatedUser = await userService.activateUser(userId, userEmail);
+        if (activatedUser) {
+          res.redirect('http://localhost:3000/login');
+        } else {
+          res.redirect('http://localhost:3000/signup');
+        }
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(err.status).json({ message: err.statusMessage });
+  }
+});
 
 /**
  * GET /api/users/ to check if username or email already exist
  */
 router.get('/check', (req, res, next) => {
-  console.log('here');
   userService
     .checkUsers(req.query)
     .then(data => res.json({ data }))
@@ -74,35 +101,6 @@ router.get('/:id', (req, res, next) => {
 
 /**
  * POST /api/users
- */
-// router.post('/client', userValidator, async (req, res, next) => {
-//   try {
-//     const userResponse = await userService.createUser(req.body);
-//     if (userResponse) {
-//       const userId = userResponse.id;
-//       const clientResponse = await clientDetailService.createClientDetails(userId, req.body);
-//       if (clientResponse) {
-//         res.status(HttpStatus.CREATED).json({
-//           userResponse,
-//           clientResponse,
-//         });
-//       } else {
-//         res.status(HttpStatus.CONFLICT).json({
-//           message: 'Details not added due to database server conflict. Please try again.',
-//         });
-//       }
-//     } else {
-//       res.status(HttpStatus.CONFLICT).json({
-//         message: 'Account not created due to server conflict. Please try again.',
-//       });
-//     }
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
-/**
- * POST /api/users
  * FOR EMAIL VERIFICATION
  */
 router.post('/client', userValidator, async (req, res, next) => {
@@ -115,38 +113,23 @@ router.post('/client', userValidator, async (req, res, next) => {
       const userId = userResponse.id;
       const clientResponse = await clientDetailService.createClientDetails(userId, req.body);
       if (clientResponse) {
-        const emailResponse = sendEmail(email);
+        const emailResponse = MAIL.sendEmail(userId, email);
         if (emailResponse) {
           message = `email is sent to ${email}`;
         } else {
-          message = `message cannot sent to ${email}`;
+          throw {
+            status: 403,
+            statusMessage: `message cannot sent to ${email}`,
+          };
         }
         res.status(HttpStatus.CREATED).json({
           userResponse,
           clientResponse,
           message,
         });
-      } else {
-        res.status(HttpStatus.CONFLICT).json({
-          message: 'Details not added due to database server conflict. Please try again.',
-        });
       }
-    } else {
-      res.status(HttpStatus.CONFLICT).json({
-        message: 'Account not created due to server conflict. Please try again.',
-      });
     }
   } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/verifyEmail', async (req, res, next) => {
-  try {
-    const emailToken = await req.query.verifyEmail;
-    console.log(emailToken);
-  } catch (err) {
-    console.log(err);
     res.status(err.status).json({ message: err.statusMessage });
   }
 });
