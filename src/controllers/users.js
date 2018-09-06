@@ -14,19 +14,17 @@ const router = Router();
 router.get('/verifyEmail', async (req, res, next) => {
   try {
     const emailToken = req.query.token;
+    // const CLIENT_BASE_URL = process.env.CLIENT_BASE_URL;
     if (emailToken) {
       const response = await MAIL.verifyEmail(emailToken);
-      console.log('response from email token', response);
       const { userId, userEmail } = response;
-
-      console.log('useremail', userEmail);
 
       if (userEmail) {
         const activatedUser = await userService.activateUser(userId, userEmail);
         if (activatedUser) {
-          res.redirect('http://localhost:3000/login');
+          res.redirect(`http://localhost:3000/login`);
         } else {
-          res.redirect('http://localhost:3000/signup');
+          res.redirect(`http://localhost:3000/signup`);
         }
       }
     }

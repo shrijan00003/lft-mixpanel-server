@@ -1,7 +1,6 @@
 import MetaData from '../models/metaData';
 import Track from '../models/track';
 import Page from '../models/page';
-// import { createClientId } from '../utils/jwtUtils';
 import { getNewDate } from '../utils/date';
 import bookshelf from '../db';
 import { getObject, getAverage } from '../utils/jsUtils';
@@ -49,7 +48,69 @@ export async function totalDataInTable(colName, table) {
 
   return total;
 }
+/**
+ *
+ * @param {*} clientId
+ */
+export async function getTotalCountriesData(clientId = '') {
+  const WEEK_DATE = getNewDate(7);
+  const LAST_WEEK = getNewDate(14);
+  let percent = 0;
 
+  console.log('this week ', WEEK_DATE);
+  console.log('last week ', LAST_WEEK);
+
+  let value = 0;
+  // using knex.raw for getting total distinct country name
+  knex
+    .raw(`select count(*) from (select distinct location->>'countryName' from event_metadata) as total_countries`)
+    .then(d => {
+      console.log('data from raw data', d.rows[0].count);
+      value = d.rows[0].count;
+
+      return d.rows[0].count;
+    })
+    .catch(e => console.log(e));
+  // const total = await MetaData.forge({}).count(knex.raw(`DISTINCT location ->> 'countryName'`));
+
+  const weeklyData = await MetaData.forge({})
+    .query(q => {
+      q.select(
+        knex.raw(
+          `date_trunc('week', created_at::date) as weekly,count(DISTINCT location ->>'countryName') AS total_countries`
+        )
+      )
+        .whereRaw('created_at > ?', LAST_WEEK)
+        .groupBy('weekly')
+        .orderBy('weekly', 'DESC');
+
+      console.log(q.toQuery());
+    })
+    .where('client_id', clientId)
+    .fetchAll()
+    .then(async d => {
+      const data = await getObject(d);
+      const total = parseInt(value);
+      const thisWeekCount = data[0] ? parseInt(data[0].totalCountries) : 0;
+
+      const lastWeekCount = data[1] ? parseInt(data[1].totalCountries) : 0;
+      if (parseInt(thisWeekCount) > parseInt(lastWeekCount)) {
+        isIncrease = true;
+        percent = eval(((thisWeekCount - lastWeekCount) / total) * 100).toFixed(2);
+      } else {
+        isIncrease = false;
+        percent = eval(((lastWeekCount - thisWeekCount) / total) * 100).toFixed(2);
+      }
+
+      return { data, total, thisWeekCount, isIncrease, lastWeekCount, percent };
+    });
+
+  return weeklyData;
+}
+/**
+ *
+ * @param {*} clientId
+ */
 export async function getTotalUserData(clientId = '') {
   const WEEK_DATE = getNewDate(7);
   const LAST_WEEK = getNewDate(14);
@@ -82,10 +143,10 @@ export async function getTotalUserData(clientId = '') {
 
       if (parseInt(thisWeekCount) > parseInt(lastWeekCount)) {
         isIncrease = true;
-        percent = eval(((thisWeekCount - lastWeekCount) / total) * 100);
+        percent = eval(((thisWeekCount - lastWeekCount) / total) * 100).toFixed(2);
       } else {
         isIncrease = false;
-        percent = eval(((lastWeekCount - thisWeekCount) / total) * 100);
+        percent = eval(((lastWeekCount - thisWeekCount) / total) * 100).toFixed(2);
       }
 
       return { dataObj, thisWeekCount, isIncrease, lastWeekCount, percent };

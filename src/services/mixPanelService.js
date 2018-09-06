@@ -123,6 +123,11 @@ export async function getTotalUserData(clientId = '') {
 
   return data;
 }
+export async function getTotalCountriesData(clientId = '') {
+  const data = await MetaDataService.getTotalCountriesData(clientId);
+
+  return data;
+}
 
 export async function getAverageUser(clientId = '') {
   const data = await MetaDataService.averageUser(clientId);
