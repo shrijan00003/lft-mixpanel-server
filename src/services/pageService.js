@@ -39,11 +39,15 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
   let newDate = null;
   let isDate = false;
   let queryDate = null;
+  let isPageQuery = false;
+
   // let totalData = await Page.count();
 
   // finding new date
 
-  // console.log('query date at first ', query.date);
+  if (query.page_name) {
+    isPageQuery = true;
+  }
   if (query.date) {
     queryDate = query.date;
     const dateSplitted = queryDate.split('-');
@@ -60,23 +64,33 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
    *
    */
   const response = Page.forge({})
-    .query(q => {
+
+    .query(qb => {
+      qb.select(
+        'pages.id as pages_id',
+        'em.id as metadata_id',
+        'pages.name',
+        'pages.title',
+        'pages.referrer',
+        'pages.path',
+
+        'pages.url',
+        'pages.created_at'
+      ).join('event_metadata as em', 'pages.metadata_id', 'em.id');
       if (queryDate !== null && !isDate) {
-        q.select('*')
-          .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
-          .whereBetween('pages.created_at', [newDate, new Date()]);
-      } else if (queryDate !== null && isDate) {
-        q.select('*')
-          .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
-          .whereRaw('pages.created_at::date = ?', newDate);
+        qb.whereBetween('pages.created_at', [newDate, new Date()]);
+      }
+      if (queryDate !== null && isDate) {
+        qb.whereRaw('pages.created_at::date = ?', newDate);
+      }
+
+      if (isPageQuery) {
+        qb.where('pages.name', 'iLIKE', `%${query.page_name}%`);
       } else {
-        q.select('*').join('event_metadata', {
-          'pages.metadata_id': 'event_metadata.id',
-        });
-        // console.log(q.toQuery());
+        return;
       }
     })
-    .where('client_id', clientId)
+    .where('em.client_id', clientId)
     .orderBy(sortBy, sortOrder)
     .fetchPage({
       pageSize,
@@ -86,7 +100,7 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
       if (!data) {
         throw {
           status: 404,
-          statusMessage: 'PAGES NOT FOUND',
+          statusMessage: 'NOT FOUND',
         };
       }
 
@@ -101,13 +115,62 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
     });
 
   return response;
+
+  //   .query(q => {
+  //     if (queryDate !== null && !isDate && !isPageQuery) {
+  //       q.select('*')
+  //         .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
+  //         .whereBetween('pages.created_at', [newDate, new Date()]);
+  //     } else if (queryDate !== null && isDate) {
+  //       q.select('*')
+  //         .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
+  //         .whereRaw('pages.created_at::date = ?', newDate);
+  //       console.log(q.toQuery());
+  //     }
+  //     if (isPageQuery) {
+  //       q.select('*')
+  //         .join('event_metadata', { 'pages.metadata_id': 'event_metadata.id' })
+  //         .where('pages.name', 'iLIKE', `%${query.page_name}%`);
+  //       // q.where('pages.page_name', 'iLIKE', `%${query.page_name}%`);
+  //     } else {
+  //       q.select('*').join('event_metadata', {
+  //         'pages.metadata_id': 'event_metadata.id',
+  //       });
+  //       // console.log(q.toQuery());
+  //     }
+  //   })
+  //   .where('client_id', clientId)
+  //   .orderBy(sortBy, sortOrder)
+  //   .fetchPage({
+  //     pageSize,
+  //     page,
+  //   })
+  //   .then(data => {
+  //     if (!data) {
+  //       throw {
+  //         status: 404,
+  //         statusMessage: 'PAGES NOT FOUND',
+  //       };
+  //     }
+
+  //     return data;
+  //   })
+  //   .catch(err => {
+  //     console.log(err);
+  //     throw {
+  //       status: 403,
+  //       statusMessage: 'ERROR OCCURED WHILE FETCHING DATA',
+  //     };
+  //   });
+
+  // return response;
 }
 
 /**
  *
  */
 export async function getPageAnalytics(clientId = '', query = {}) {
-  const col = query.getBy || 'title';
+  const col = query.getBy || 'path';
 
   const page = query.page || '1';
   const pageSize = query.page_size || '5';

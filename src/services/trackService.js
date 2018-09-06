@@ -146,21 +146,21 @@ export async function getMaxUsedDevices(clientId, col, table) {
  *
  */
 export async function getTrackAnalytics(clientId = '', query = {}) {
-  const eventName = query.event_name;
+  const col = query.getBy || 'event';
 
   const page = query.page || '1';
   const pageSize = query.page_size || '10';
 
   const result = await Track.forge()
+
     .query(q => {
       q.distinct('tracks.event_name', 'em.browser', 'em.os', 'em.device')
         .select(KNEX.raw(`count(em.user_id) OVER (PARTITION BY tracks.event_name) AS total_users`))
         .join('event_metadata as em', 'tracks.metadata_id', 'em.id')
         .orderBy('total_users', 'DESC');
-      if (eventName) {
-        q.where('tracks.event_name', 'iLIKE', `%${eventName}%`);
+      if (col) {
+        q.where('tracks.event_name', 'iLIKE', `%${col}%`);
       }
-      console.log('query printing', q.toQuery());
     })
     .where('em.client_id', clientId)
     .fetchPage({
