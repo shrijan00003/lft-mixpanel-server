@@ -42,27 +42,10 @@ export function seed(knex, Promise) {
             location: {
               latitude: 47.6062,
               longitude: 122.3321,
-              countryName: 'Russia',
+              countryName: 'Russian Federation',
             },
           },
 
-          {
-            updated_at: new Date(),
-            client_id: 'abc123',
-            browser: 'firefox',
-            os: 'linux',
-            user_id: 3,
-            user_name: 'ankita',
-            user_email: 'ankita@gmail.com',
-            ip_address: '192.168.1.1',
-            user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
-            location: {
-              latitude: 37.0902,
-              longitude: 95.7129,
-              countryName: 'China',
-            },
-          },
           {
             updated_at: new Date(),
             client_id: 'abc123',
@@ -77,7 +60,7 @@ export function seed(knex, Promise) {
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
-              countryName: 'United States',
+              countryName: 'China',
             },
           },
           {
@@ -131,6 +114,24 @@ export function seed(knex, Promise) {
               countryName: 'France',
             },
           },
+
+          {
+            updated_at: new Date(),
+            client_id: 'abc12345',
+            browser: 'chrome',
+            os: 'ios',
+            user_id: 3,
+            user_name: 'ankita',
+            user_email: 'ankita@gmail.com',
+            ip_address: '192.168.1.1',
+            user_info: { name: 'ankita', address: 'kalanki' },
+            device: '1366x768',
+            location: {
+              latitude: 47.6062,
+              longitude: 122.3321,
+              countryName: 'Russian Federation',
+            },
+          },
           {
             updated_at: new Date(),
             client_id: 'abc12345',
@@ -148,41 +149,7 @@ export function seed(knex, Promise) {
               countryName: 'China',
             },
           },
-          {
-            updated_at: new Date(),
-            client_id: 'abc12345',
-            browser: 'chrome',
-            os: 'ios',
-            user_id: 3,
-            user_name: 'ankita',
-            user_email: 'ankita@gmail.com',
-            ip_address: '192.168.1.1',
-            user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1366x768',
-            location: {
-              latitude: 47.6062,
-              longitude: 122.3321,
-              countryName: 'Russia',
-            },
-          },
 
-          {
-            updated_at: new Date(),
-            client_id: 'abc12345',
-            browser: 'firefox',
-            os: 'linux',
-            user_id: 3,
-            user_name: 'ankita',
-            user_email: 'ankita@gmail.com',
-            ip_address: '192.168.1.1',
-            user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
-            location: {
-              latitude: 37.0902,
-              longitude: 95.7129,
-              countryName: 'China',
-            },
-          },
           {
             updated_at: new Date(),
             client_id: 'abc12345',
@@ -197,7 +164,7 @@ export function seed(knex, Promise) {
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
-              countryName: 'United States',
+              countryName: 'China',
             },
           },
           {
@@ -251,23 +218,7 @@ export function seed(knex, Promise) {
               countryName: 'France',
             },
           },
-          {
-            updated_at: new Date(),
-            client_id: 'abc1234',
-            browser: 'chrome',
-            os: 'android',
-            user_id: 3,
-            user_name: 'ankita',
-            user_email: 'ankita@gmail.com',
-            ip_address: '192.168.1.1',
-            user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
-            location: {
-              latitude: 37.0902,
-              longitude: 95.7129,
-              countryName: 'China',
-            },
-          },
+
           {
             updated_at: new Date(),
             client_id: 'abc1234',
@@ -282,27 +233,10 @@ export function seed(knex, Promise) {
             location: {
               latitude: 47.6062,
               longitude: 122.3321,
-              countryName: 'Russia',
+              countryName: 'Russian Federation',
             },
           },
 
-          {
-            updated_at: new Date(),
-            client_id: 'abc1234',
-            browser: 'firefox',
-            os: 'linux',
-            user_id: 3,
-            user_name: 'ankita',
-            user_email: 'ankita@gmail.com',
-            ip_address: '192.168.1.1',
-            user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
-            location: {
-              latitude: 37.0902,
-              longitude: 95.7129,
-              countryName: 'China',
-            },
-          },
           {
             updated_at: new Date(),
             client_id: 'abc1234',
@@ -317,7 +251,7 @@ export function seed(knex, Promise) {
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
-              countryName: 'United States',
+              countryName: 'China',
             },
           },
           {
@@ -335,6 +269,23 @@ export function seed(knex, Promise) {
               latitude: 61.524,
               longitude: 105.3188,
               countryName: 'Russian Federation',
+            },
+          },
+          {
+            updated_at: new Date(),
+            client_id: 'abc1234',
+            browser: 'chrome',
+            os: 'android',
+            user_id: 3,
+            user_name: 'ankita',
+            user_email: 'ankita@gmail.com',
+            ip_address: '192.168.1.1',
+            user_info: { name: 'ankita', address: 'kalanki' },
+            device: '1980x1020',
+            location: {
+              latitude: 37.0902,
+              longitude: 95.7129,
+              countryName: 'China',
             },
           },
           {
