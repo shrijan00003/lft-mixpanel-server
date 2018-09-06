@@ -15,11 +15,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 3,
-            path: '/',
+            path: '/gallery',
 
-            referrer: '/',
+            referrer: 'https://www.facebook.com/',
             search: 'home',
-            title: 'Home',
+            title: 'Gallery',
 
             url: 'www.myurl.com',
           },
@@ -29,7 +29,7 @@ export function seed(knex, Promise) {
             metadata_id: 3,
             path: '/home',
 
-            referrer: '/home',
+            referrer: 'https://www.google.com/',
             search: 'howto',
             title: 'Login',
 
@@ -39,9 +39,9 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Myapp',
             metadata_id: 3,
-            path: '/',
+            path: '/home',
 
-            referrer: '/home',
+            referrer: 'https://www.facebook.com/',
             search: 'Myapp',
             title: 'Home',
 
@@ -51,11 +51,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 3,
-            path: '/',
+            path: '/gallery',
 
-            referrer: '/',
+            referrer: 'https://www.twitter.com/',
             search: 'home',
-            title: 'Home',
+            title: 'Gallery',
 
             url: 'www.myurl.com',
           },
@@ -63,11 +63,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 10,
-            path: '/',
+            path: '/signup',
 
-            referrer: '/',
+            referrer: 'https://www.facebook.com/',
             search: 'home',
-            title: 'Home',
+            title: 'Signup',
 
             url: 'www.myurl.com',
           },
@@ -77,9 +77,9 @@ export function seed(knex, Promise) {
             metadata_id: 10,
             path: '/home',
 
-            referrer: '/home',
+            referrer: 'https://www.facebook.com/',
             search: 'howto',
-            title: 'Login',
+            title: 'Home',
 
             url: 'www.myurl.com/login',
           },
@@ -87,11 +87,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Myapp',
             metadata_id: 10,
-            path: '/',
+            path: '/blog',
 
-            referrer: '/home',
+            referrer: 'https://www.google.com/',
             search: 'Myapp',
-            title: 'Home',
+            title: 'Blog',
 
             url: 'www.myurl.com',
           },
@@ -99,9 +99,9 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 10,
-            path: '/',
+            path: '/home',
 
-            referrer: '/',
+            referrer: 'https://www.instagram.com/',
             search: 'home',
             title: 'Home',
 
@@ -111,11 +111,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 15,
-            path: '/',
+            path: '/blog',
 
-            referrer: '/',
+            referrer: 'https://www.facebook.com/',
             search: 'home',
-            title: 'Home',
+            title: 'Blog',
 
             url: 'www.myurl.com',
           },
@@ -125,9 +125,9 @@ export function seed(knex, Promise) {
             metadata_id: 15,
             path: '/home',
 
-            referrer: '/home',
+            referrer: 'https://www.google.com/',
             search: 'howto',
-            title: 'Login',
+            title: 'Home',
 
             url: 'www.myurl.com/login',
           },
@@ -135,11 +135,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Myapp',
             metadata_id: 15,
-            path: '/',
+            path: '/blog',
 
-            referrer: '/home',
+            referrer: 'https://www.facebook.com/',
             search: 'Myapp',
-            title: 'Home',
+            title: 'Blog',
 
             url: 'www.myurl.com',
           },
@@ -147,11 +147,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 15,
-            path: '/',
+            path: '/login',
 
-            referrer: '/',
+            referrer: 'https://www.facebook.com/',
             search: 'home',
-            title: 'Home',
+            title: 'Login',
 
             url: 'www.myurl.com',
           },

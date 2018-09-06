@@ -21,7 +21,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '320x480',
             location: {
               latitude: 37.0902,
               longitude: 95.7129,
@@ -56,7 +56,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1366x768',
+            device: '640x480',
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
@@ -73,7 +73,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '640x480',
             location: {
               latitude: 61.524,
               longitude: 105.3188,
@@ -125,7 +125,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1366x768',
+            device: '640x480',
             location: {
               latitude: 47.6062,
               longitude: 122.3321,
@@ -160,7 +160,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1366x768',
+            device: '320x480',
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
@@ -177,7 +177,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '640x480',
             location: {
               latitude: 61.524,
               longitude: 105.3188,
@@ -194,7 +194,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '320x480',
             location: {
               latitude: 55.7558,
               longitude: 37.6173,
@@ -229,7 +229,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1366x768',
+            device: '320x480',
             location: {
               latitude: 47.6062,
               longitude: 122.3321,
@@ -247,7 +247,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1366x768',
+            device: '640x480',
             location: {
               latitude: 30.9843,
               longitude: 91.9623,
@@ -264,7 +264,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '320x480',
             location: {
               latitude: 61.524,
               longitude: 105.3188,
@@ -298,7 +298,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '640x480',
             location: {
               latitude: 55.7558,
               longitude: 37.6173,
@@ -315,7 +315,7 @@ export function seed(knex, Promise) {
             user_email: 'ankita@gmail.com',
             ip_address: '192.168.1.1',
             user_info: { name: 'ankita', address: 'kalanki' },
-            device: '1980x1020',
+            device: '320x480',
             location: {
               latitude: 46.2276,
               longitude: 2.2137,

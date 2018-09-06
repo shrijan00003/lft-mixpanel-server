@@ -110,14 +110,13 @@ export async function getTotalCountriesData(clientId = '') {
  * @param {*} clientId
  */
 export async function getTotalUserData(clientId = '') {
-  const WEEK_DATE = getNewDate(7);
   const LAST_WEEK = getNewDate(14);
   let percent = 0;
 
-  console.log('this week ', WEEK_DATE);
-  console.log('last week ', LAST_WEEK);
+  const total = await MetaData.where({ client_id: clientId }).count('user_id');
 
-  const total = await MetaData.forge({}).count('user_id');
+  console.log(total, 'total');
+  // .where('client_id', clientId);
 
   const byWeek = await MetaData.forge({})
     .query(q => {
@@ -127,13 +126,13 @@ export async function getTotalUserData(clientId = '') {
         .groupBy('weekly')
         .orderBy('weekly', 'DESC');
 
-      console.log(q.toQuery());
+      // console.log(q.toQuery());
     })
     .where('client_id', clientId)
     .fetchAll()
     .then(async data => {
       const dataObj = await getObject(data);
-      console.log(dataObj);
+      // console.log(dataObj);
 
       const thisWeekCount = dataObj[0] ? dataObj[0].count : 0;
 
@@ -205,7 +204,7 @@ export async function averageUser(clientId = '') {
         .groupBy('daily')
         .orderBy('daily', 'DESC');
 
-      console.log(q.toQuery());
+      // console.log(q.toQuery());
     })
     .where('client_id', clientId)
     .fetchAll()
@@ -228,8 +227,6 @@ export async function allMetaData(clientId = '') {
       q.select('*')
         .groupBy('id', 'user_id')
         .orderBy('id', 'DESC');
-
-      console.log('query to get all metadata group by user id  ', q.toQuery());
     })
     .where('client_id', clientId)
     .fetchAll()
