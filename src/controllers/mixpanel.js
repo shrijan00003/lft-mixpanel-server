@@ -59,6 +59,7 @@ router.post('/disconfigure', async (req, res, next) => {
  * @argument req
  * @response status and jsonindentifyClient
  */
+
 router.post('/identify', identyfyClient, async (req, res, next) => {
   try {
     let metadata = req.body.metaData;
@@ -271,12 +272,15 @@ router.get('/dashboard', authenticate, async (req, res, next) => {
     const allMetadata = await MixPanelService.getAllMetaData(clientId);
     const totalUserData = await MixPanelService.getTotalUserData(clientId);
     const totalCountriesData = await MixPanelService.getTotalCountriesData(clientId);
+    console.log('total countries data', totalCountriesData);
+    const monthlyUserData = await MixPanelService.getMonthlyUserData(clientId);
 
     res.json({
       averageUser,
       totalUserData,
       allMetadata,
       totalCountriesData,
+      monthlyUserData,
     });
   } catch (err) {
     console.log(err);

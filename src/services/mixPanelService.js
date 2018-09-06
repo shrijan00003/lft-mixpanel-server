@@ -129,6 +129,12 @@ export async function getTotalCountriesData(clientId = '') {
   return data;
 }
 
+export async function getMonthlyUserData(clientId = '') {
+  const data = await MetaDataService.getMonthlyUserData(clientId);
+
+  return data;
+}
+
 export async function getAverageUser(clientId = '') {
   const data = await MetaDataService.averageUser(clientId);
 
