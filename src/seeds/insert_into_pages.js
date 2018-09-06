@@ -15,11 +15,11 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 3,
-            path: '/',
+            path: '/gallery',
 
-            referrer: '/',
+            referrer: 'https://www.facebook.com/',
             search: 'home',
-            title: 'Home',
+            title: 'Gallery',
 
             url: 'www.myurl.com',
           },
@@ -29,7 +29,7 @@ export function seed(knex, Promise) {
             metadata_id: 3,
             path: '/home',
 
-            referrer: '/home',
+            referrer: 'https://www.google.com/',
             search: 'howto',
             title: 'Login',
 
@@ -39,9 +39,9 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Myapp',
             metadata_id: 3,
-            path: '/',
+            path: '/home',
 
-            referrer: '/home',
+            referrer: 'https://www.facebook.com/',
             search: 'Myapp',
             title: 'Home',
 
@@ -51,11 +51,107 @@ export function seed(knex, Promise) {
             updated_at: new Date(),
             name: 'Home',
             metadata_id: 3,
-            path: '/',
+            path: '/gallery',
 
-            referrer: '/',
+            referrer: 'https://www.twitter.com/',
+            search: 'home',
+            title: 'Gallery',
+
+            url: 'www.myurl.com',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Home',
+            metadata_id: 10,
+            path: '/signup',
+
+            referrer: 'https://www.facebook.com/',
+            search: 'home',
+            title: 'Signup',
+
+            url: 'www.myurl.com',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Login',
+            metadata_id: 10,
+            path: '/home',
+
+            referrer: 'https://www.facebook.com/',
+            search: 'howto',
+            title: 'Home',
+
+            url: 'www.myurl.com/login',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Myapp',
+            metadata_id: 10,
+            path: '/blog',
+
+            referrer: 'https://www.google.com/',
+            search: 'Myapp',
+            title: 'Blog',
+
+            url: 'www.myurl.com',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Home',
+            metadata_id: 10,
+            path: '/home',
+
+            referrer: 'https://www.instagram.com/',
             search: 'home',
             title: 'Home',
+
+            url: 'www.myurl.com',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Home',
+            metadata_id: 15,
+            path: '/blog',
+
+            referrer: 'https://www.facebook.com/',
+            search: 'home',
+            title: 'Blog',
+
+            url: 'www.myurl.com',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Login',
+            metadata_id: 15,
+            path: '/home',
+
+            referrer: 'https://www.google.com/',
+            search: 'howto',
+            title: 'Home',
+
+            url: 'www.myurl.com/login',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Myapp',
+            metadata_id: 15,
+            path: '/blog',
+
+            referrer: 'https://www.facebook.com/',
+            search: 'Myapp',
+            title: 'Blog',
+
+            url: 'www.myurl.com',
+          },
+          {
+            updated_at: new Date(),
+            name: 'Home',
+            metadata_id: 15,
+            path: '/login',
+
+            referrer: 'https://www.facebook.com/',
+            search: 'home',
+            title: 'Login',
 
             url: 'www.myurl.com',
           },

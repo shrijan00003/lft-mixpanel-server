@@ -230,6 +230,25 @@ router.get('/total/users', authenticate, async (req, res, next) => {
 });
 
 /**
+ * GET /api/mixpanel/total/countries to get total user with count of last two weeks for comparision
+ * FOR NOW THIS WILL BE CALLED WITH THE DASHBOARD AND DISPLAYED TOGETHER
+ */
+
+/* 
+ router.get('/total/countries', authenticate, async (req, res, next) => {
+   try {
+     const clientId = await MixPanelService.getClientIdByUserId(req.userId);
+     const totalCountriesData = await MixPanelService.getTotalCountriesData(clientId);
+     res.status(200).json(totalCountriesData);
+    } catch (err) {
+      console.log(err);
+      res.status(err.status).json(err.statusMessage);
+    }
+  });
+  
+*/
+
+/**
  * GET /api/mixpanel/total/users to get total user with count of last two weeks for comparision
  */
 router.get('/average/users', authenticate, async (req, res, next) => {
@@ -252,12 +271,15 @@ router.get('/dashboard', authenticate, async (req, res, next) => {
     const averageUser = await MixPanelService.getAverageUser(clientId);
     const allMetadata = await MixPanelService.getAllMetaData(clientId);
     const totalUserData = await MixPanelService.getTotalUserData(clientId);
+    const totalCountriesData = await MixPanelService.getTotalCountriesData(clientId);
+    // console.log('total countries data', totalCountriesData);
     const monthlyUserData = await MixPanelService.getMonthlyUserData(clientId);
 
     res.json({
       averageUser,
       totalUserData,
       allMetadata,
+      totalCountriesData,
       monthlyUserData,
     });
   } catch (err) {

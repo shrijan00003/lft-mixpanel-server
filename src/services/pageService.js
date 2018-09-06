@@ -43,7 +43,7 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
 
   // finding new date
 
-  console.log('query date at first ', query.date);
+  // console.log('query date at first ', query.date);
   if (query.date) {
     queryDate = query.date;
     const dateSplitted = queryDate.split('-');
@@ -73,7 +73,7 @@ export function getPagesWithMetaData(clientId = '', query = {}) {
         q.select('*').join('event_metadata', {
           'pages.metadata_id': 'event_metadata.id',
         });
-        console.log(q.toQuery());
+        // console.log(q.toQuery());
       }
     })
     .where('client_id', clientId)
