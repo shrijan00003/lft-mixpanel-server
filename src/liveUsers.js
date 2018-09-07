@@ -127,6 +127,24 @@ const showLiveUsers = server => {
       io.to(appClient).emit('liveUsers', Object.keys(liveUsers).length);
       io.to(appClient).emit('liveUsersActivity', 'New user joined with id ' + userId + '.');
     });
+
+    // ON USER EVENT OCCURANCE
+    socket.on('userActivity', activity => {
+      const appClient = activity.clientEmail.split('@')[0];
+
+      if (activity.trackData) {
+        io.to(appClient).emit(
+          'liveUsersActivity',
+          activity.trackData.eventName + ' event clicked by user' + activity.userInfo.userId
+        );
+      }
+      if (activity.pageData) {
+        io.to(appClient).emit(
+          'liveUsersActivity',
+          'User ' + activity.userInfo.userId + ' redirected to page ' + activity.pageData.url
+        );
+      }
+    });
   });
 };
 
