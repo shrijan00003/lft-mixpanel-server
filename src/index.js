@@ -1,11 +1,12 @@
-import './env';
 import './db';
+import './env';
 import cors from 'cors';
 import path from 'path';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import express from 'express';
 import routes from './routes';
+import showLiveUsers from './liveUsers';
 import favicon from 'serve-favicon';
 import logger from './utils/logger';
 import bodyParser from 'body-parser';
@@ -14,6 +15,22 @@ import json from './middlewares/json';
 import * as errorHandler from './middlewares/errorHandler';
 
 const app = express();
+const http = require('http');
+
+// Listening for live record
+const server = http.createServer(app);
+showLiveUsers(server);
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json,Authorization'
+  );
+  next();
+});
 
 const APP_PORT =
   (process.env.NODE_ENV === 'test' ? process.env.TEST_APP_PORT : process.env.APP_PORT) || process.env.PORT || '3000';
@@ -44,7 +61,7 @@ app.use('/api', routes);
 app.use(errorHandler.genericErrorHandler);
 app.use(errorHandler.methodNotAllowed);
 
-app.listen(app.get('port'), () => {
+server.listen(app.get('port'), () => {
   logger.log('info', `Server started at :${app.get('port')}`);
 });
 

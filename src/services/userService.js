@@ -1,6 +1,10 @@
 import Boom from 'boom';
 import User from '../models/user';
 import * as jwtUtils from '../utils/jwtUtils';
+import { getObject } from '../utils/jsUtils';
+import bookshelf from '../db';
+import { updateClientProfile } from './clientServices';
+import HttpStatus from 'http-status-codes';
 
 /**
  * Get all users.
@@ -28,19 +32,45 @@ export function getUser(id) {
 }
 
 /**
+ * Get a user and check if it already exist
+ *
+ * @param  {Object}  userData
+ * @return {Promise}
+ */
+export function checkUsers(userData) {
+  const countUser = User.query(q => {
+    q.where('user_name', userData.user_name).orWhere('user_email', userData.user_email);
+  }).count();
+
+  return countUser;
+}
+
+/**
  * Create new user.
  *
  * @param  {Object}  user
  * @return {Promise}
  */
 export async function createUser(user) {
-  return new User({
-    user_name: user.user_name,
-    user_email: user.user_email,
+  const _user = await new User({
+    firstName: user.first_name,
+    lastName: user.last_name,
+    userName: user.user_name,
+    userEmail: user.user_email,
+    phone: user.phone,
     password: await jwtUtils.getHash(user.password),
   })
     .save()
-    .then(user => user.refresh());
+    .then(user => user.refresh())
+    .catch(err => {
+      throw {
+        status: HttpStatus.CONFLICT,
+        statusMessage: 'Account not created due to server conflict. Please try again.',
+        err,
+      };
+    });
+
+  return _user;
 }
 
 /**
@@ -68,23 +98,70 @@ export function updateUser(id, user) {
  * @param  {Number|String}  id
  * @return {Promise}
  */
+// export function deleteUser(id) {
+//   return new User({ id }).fetch().then(user => user.destroy());
+// }
+
 export function deleteUser(id) {
-  return new User({ id }).fetch().then(user => user.destroy());
+  return new User({ id })
+    .save({
+      deletedAt: new Date(),
+    })
+    .then(user => user.refresh())
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 404,
+          statusMessage: 'The user you entered did not matched our records.',
+        };
+      }
+      console.log(user);
+
+      return user;
+    });
 }
 
 /**
  *
- * @param {*} emailParam
+ * @param {*} userIndetity
  */
-export function fetchByEmail(emailParam) {
-  if (emailParam) {
-    return User.forge({ user_email: emailParam })
+export function fetchUser(userIndetity) {
+  if (userIndetity) {
+    return User.query(q => {
+      q.where('user_email', userIndetity).orWhere('user_name', userIndetity);
+    })
       .fetch()
       .then(user => {
         if (!user) {
-          throw { status: 400, statusMessage: 'User Not Found' };
+          throw {
+            status: 404,
+            statusMessage: 'The user you entered did not matched our records.',
+          };
         }
 
+        return user;
+      });
+  }
+}
+
+/**
+ * @param { string } userIndetity
+ */
+export function fetchUserLoginDetails(userIndetity, checkFromDate) {
+  if (userIndetity) {
+    return User.query(qb => {
+      qb.count('*')
+        .from('users')
+        .join('user_login_details', {
+          'users.id': 'user_login_details.user_id',
+        })
+        .where({ user_email: userIndetity })
+        .orWhere({ user_name: userIndetity })
+        .andWhere('user_login_details.created_at', '>', checkFromDate)
+        .andWhere('user_login_details.status', 0);
+    })
+      .fetch()
+      .then(user => {
         return user;
       });
   }
@@ -95,7 +172,7 @@ export function fetchByEmail(emailParam) {
  * @param {*} idParam
  * @param {*} refreshTokenParam
  */
-export function updateUserRefreshToken(idParam, refreshTokenParam) {
+export function updateUserRefreshToken(idParam, refreshTokenParam = null) {
   if (idParam) {
     return User.forge({ id: idParam })
       .save({
@@ -103,7 +180,7 @@ export function updateUserRefreshToken(idParam, refreshTokenParam) {
       })
       .then(user => user.refresh)
       .catch(err => {
-        console.log('error occured while updating refresh token ' + err);
+        throw { status: 503, message: 'Cannot Update Refresh Token', err };
       });
   }
 }
@@ -119,12 +196,168 @@ export function getByIdAndToken(userId, refreshToken) {
       .fetch()
       .then(user => {
         if (!user) {
-          throw new Boom.notFound('user not found');
+          throw {
+            status: 404,
+            message: 'User Not Found With this Access Token and Refresh Token',
+          };
         }
 
         return user;
       });
-  } else {
-    throw new Boom.notFound('user not found');
   }
+}
+
+/**
+ *
+ * @param {*} userId
+ */
+/* 
+ "userProfile": {
+        "userFullName": "Shrijan Tripathi",
+        "userPhone": "1234567890",
+        "userEmail": "shrijan00003@gmail.com",
+        "userImage": null,
+        "isclient": true,
+        "domainName": "www.abc.com",
+        "companyName": "hello world",
+        "plan": "free",
+        "description": null
+    }
+ */
+export function updateProfile(userId, body) {
+  return bookshelf.transaction(async t => {
+    await updateUserProfile(userId, body, { transaction: t });
+    await updateClientProfile(userId, body, { transcation: t });
+  });
+}
+const updateUserProfile = (userId, data, t) => {
+  return User.forge({ id: userId })
+    .save(
+      {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        user_name: data.userName,
+        phone: data.phone,
+        user_email: data.userEmail,
+        image_url: data.imageUrl,
+      },
+      t
+    )
+    .then(user => user.refresh())
+    .then(user => user)
+    .catch(err => console.log(err));
+};
+
+/**
+ * @param {*} userId
+ */
+export function getUserProfile(userId) {
+  if (userId) {
+    return User.forge({ id: userId, deletedAt: null })
+      .fetch({
+        withRelated: ['clientDetails'],
+      })
+      .then(async userData => {
+        if (!userData) {
+          throw {
+            status: 404,
+            message: 'USER NOT FOUND',
+          };
+        }
+
+        // this will return userobject from json
+        const userObject = await getObject(userData);
+
+        const clientDetails = userObject.clientDetails ? userObject.clientDetails[0] : null;
+
+        const data = {
+          userFullName: `${userObject.firstName} ${userObject.lastName}`,
+          userPhone: userObject.phone,
+          userEmail: userObject.userEmail,
+          userImage: userObject.imageUrl,
+          isclient: clientDetails ? true : false,
+          clientId: clientDetails ? clientDetails.clientId : null,
+          domainName: clientDetails ? clientDetails.domainName : null,
+          companyName: clientDetails ? clientDetails.companyName : null,
+          plan: clientDetails ? clientDetails.plan : null,
+          description: clientDetails ? clientDetails.description : null,
+        };
+
+        return data;
+      })
+      .catch(() => {
+        // console.log(err);
+        throw {
+          status: 400,
+          message: 'ERROR OCCURED DURING FETCHING DATA',
+        };
+      });
+  }
+
+  return userId;
+} // end of getUserClient
+
+/**
+ * @param userId
+ * @returns Promise <clientId>
+ */
+export function getClientId(userId) {
+  return User.forge({})
+    .query(q => {
+      q.select('client_user_details.client_id')
+        .join('client_user_details', {
+          'users.id': 'client_user_details.user_id',
+        })
+        .where('users.id', userId);
+
+      // console.log(q.toQuery());
+    })
+    .fetch()
+    .then(async data => {
+      const dataObj = await getObject(data);
+
+      return dataObj.clientId;
+    })
+    .catch(err => console.error(err));
+}
+
+export function activateUser(id = '', email = '') {
+  return User.forge({ id, userEmail: email })
+    .save({
+      isActive: true,
+    })
+    .then(user => user.refresh())
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 404,
+          statusMessage: 'USER NOT FOUND',
+        };
+      }
+
+      return user;
+    })
+    .catch(err => console.log(err));
+}
+
+export function checkIfVerified(userIdentity = '') {
+  return User.forge()
+    .query(q =>
+      q
+        .select('*')
+        .where('user_email', userIdentity)
+        .orWhere('user_name', userIdentity)
+        .andWhere('is_active', true)
+    )
+    .fetch()
+    .then(user => {
+      if (!user) {
+        throw {
+          status: 400,
+          statusMessage: 'please verify account from your email and try again',
+        };
+      }
+
+      return true;
+    });
 }

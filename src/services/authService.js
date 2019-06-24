@@ -1,25 +1,54 @@
 import * as jwtUtil from '../utils/jwtUtils';
 import * as UserService from './userService';
+import * as LoginDetailsService from './loginDetailsService';
 
-export async function loginUser(bodyParam) {
-  const userEmail = bodyParam.user_email;
-  const { password } = bodyParam;
+export async function loginUser(bodyParam, clientIp) {
+  let loginStatus = 0;
 
-  const user = await UserService.fetchByEmail(userEmail);
-  const match = await jwtUtil.verifyUser(password, user);
+  const password = bodyParam.password,
+    userIdentity = bodyParam.user_identity;
 
-  if (match) {
-    const accessToken = jwtUtil.createAccessToken(user.id);
-    const refreshToken = jwtUtil.createRefreshToken();
-    await UserService.updateUserRefreshToken(user.id, refreshToken);
+  const userLoginDetails = {
+    os: bodyParam.os,
+    ip_address: clientIp,
+    device: bodyParam.device,
+    details: bodyParam.details,
+    browser: bodyParam.browser,
+    location: bodyParam.location,
+  };
 
-    return {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      id: user.id,
-    };
-  } else {
-    throw { status: 403, statusMessage: 'Password Is Incorrect' };
+  try {
+    const user = await UserService.fetchUser(userIdentity);
+    const match = await jwtUtil.verifyUser(password, user);
+    const userObj = JSON.parse(JSON.stringify(user));
+
+    if (match) {
+      loginStatus = 1;
+      const accessToken = jwtUtil.createAccessToken(user.id);
+      const refreshToken = jwtUtil.createRefreshToken(user.id);
+      await UserService.updateUserRefreshToken(user.id, refreshToken);
+
+      // Recording login success details
+      LoginDetailsService.createLoginDetails(userLoginDetails, user.id, loginStatus);
+
+      return {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        id: user.id,
+        name: userObj.firstName + ' ' + userObj.lastName,
+        userName: userObj.userName,
+      };
+    } else {
+      loginStatus = 0;
+      // Recording login failure details
+      LoginDetailsService.createLoginDetails(userLoginDetails, user.id, loginStatus);
+      throw {
+        status: 403,
+        statusMessage: 'The password did not matched the user. Please try again.',
+      };
+    }
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -27,7 +56,7 @@ export async function refresh(id, refreshToken) {
   const user = await UserService.getByIdAndToken(id, refreshToken);
   if (user) {
     const newAccessToken = jwtUtil.createAccessToken(id);
-    const newRefreshToken = jwtUtil.createRefreshToken();
+    const newRefreshToken = jwtUtil.createRefreshToken(id);
     await UserService.updateUserRefreshToken(id, newRefreshToken);
 
     return {
@@ -45,19 +74,15 @@ export async function refresh(id, refreshToken) {
 export async function logout(userId, refreshToken) {
   try {
     const user = await UserService.getByIdAndToken(userId, refreshToken);
-    console.log(user);
-    if (user && (await UserService.updateUserRefreshToken(userId, null))) {
-      return {
-        status: 200,
-        message: 'successfully got logout ',
-      };
-    } else {
-      return {
-        status: 404,
-        message: 'Sorry user cant found ',
-      };
+    if (user) {
+      await UserService.updateUserRefreshToken(userId);
     }
+
+    return {
+      status: 200,
+      message: 'Successful logged out',
+    };
   } catch (err) {
-    console.log('error occured on logout in authservice with err =====' + err);
+    throw err;
   }
 }

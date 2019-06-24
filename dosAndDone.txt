@@ -1,0 +1,17 @@
+> Client details userValidators doesn't include rules for some field check later
+> Login by username or email <done>
+> generate unique username by email <done>
+> If unique email is not received give response as email already in use taken <done>
+> For above solution create api for checking eamil and username uniquenes <done>
+
+> login status will be 1 if success 0 if failed <done>
+
+
+-----------------------------------------
+modify idendity api 
+
+> add migration for user_name, user_email and user_info 
+> idendity api should return metadata with its id 
+> if metadata id is already available in the localstorage in the client then we should not call idendity 
+> for both page and track api we should check if metadata or metadata_id came as parameter 
+> if metadta id came we should use it as reference otherwise save metadata at first then save track or page data

@@ -1,7 +1,4 @@
-import bcrypt from 'bcrypt';
-import { SALT_WORK_FACTOR } from '../constants/auth';
-
-const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
+import * as Util from '../utils/jwtUtils';
 /**
  * Seed users table.
  *
@@ -10,7 +7,7 @@ const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
  * @return {Promise}
  */
 export async function seed(knex, Promise) {
-  const password = await bcrypt.hash('password', salt);
+  const password = await Util.getHash('password');
 
   return knex('users')
     .del()
@@ -22,7 +19,11 @@ export async function seed(knex, Promise) {
             updated_by: '1',
             deleted_at: null,
             deleted_by: null,
-            user_name: 'Shrijan Tripathi',
+            first_name: 'Shrijan',
+            last_name: 'Tripathi',
+            gender: 'male',
+            phone: '1234567890',
+            user_name: 'shrijan00003',
             user_email: 'shrijan00003@gmail.com',
             user_type: 1,
             password: password,
@@ -34,8 +35,28 @@ export async function seed(knex, Promise) {
             updated_by: '1',
             deleted_at: null,
             deleted_by: null,
-            user_name: 'Akasky Rai',
+            first_name: 'Akash',
+            last_name: 'Rai',
+            gender: 'male',
+            phone: '1234567890',
+            user_name: 'akasky72',
             user_email: 'akasky72@gmail.com',
+            user_type: 1,
+            password: password,
+            refresh_token: null,
+            is_active: '1',
+          },
+          {
+            updated_at: new Date(),
+            updated_by: '1',
+            deleted_at: null,
+            deleted_by: null,
+            first_name: 'Ankita',
+            last_name: 'Sharma',
+            gender: 'female',
+            phone: '1234567890',
+            user_name: 'ankita',
+            user_email: 'ankita@gmail.com',
             user_type: 1,
             password: password,
             refresh_token: null,

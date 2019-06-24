@@ -1,11 +1,9 @@
 import { Router } from 'express';
 import swaggerSpec from './utils/swagger';
-
-import usersController from './controllers/users';
-import todosController from './controllers/todos';
-import categoriesController from './controllers/categories';
-import registerController from './controllers/register';
 import authController from './controllers/auth';
+import usersController from './controllers/users';
+import registerController from './controllers/register';
+import mixpanelController from './controllers/mixpanel';
 
 /**
  * Contains all API routes for the application.
@@ -59,19 +57,12 @@ router.get('/', (req, res) => {
 
 router.use('/users', usersController);
 
-/**
- * Router for todos
- */
-router.use('/todos', todosController);
-
-/**
- * Router for categories
- */
-router.use('/categories', categoriesController);
-
 // route for register
 router.use('/register', registerController);
 
 router.use('/auth', authController);
+
+// for mixpanels
+router.use('/mixpanel', mixpanelController);
 
 export default router;

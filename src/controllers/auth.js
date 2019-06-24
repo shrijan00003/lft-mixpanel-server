@@ -1,19 +1,56 @@
 import { Router } from 'express';
-import * as AuthService from '../services/authService';
+import requestIp from 'request-ip';
 import { authenticate } from '../middlewares/auth';
+import * as AuthService from '../services/authService';
+import { countLoginAttempts } from '../services/loginDetailsService';
+import { isVerified } from '../middlewares/isVerified';
 
 const router = Router();
 
-router.post('/login', async (req, res, next) => {
+/**
+ *
+ * POST / login user
+ */
+router.post('/login', isVerified, async (req, res, next) => {
+  const clientIp = requestIp.getClientIp(req);
+
   try {
-    const response = await AuthService.loginUser(req.body);
+    const response = await AuthService.loginUser(req.body, clientIp);
     res.status(200).json(response);
   } catch (err) {
-    // next(err);
     res.status(err.status).json({ message: err.statusMessage });
   }
 });
 
+/**
+ *
+ * POST / login attempt count
+ */
+router.post('/logincount', async (req, res, next) => {
+  console.log(req.body.user_identity);
+  const userData = {
+    userIdentity: req.body.user_identity,
+  };
+
+  try {
+    const response = await countLoginAttempts(userData);
+    console.log(response);
+    if (parseInt(response.attributes.count) >= 5) {
+      throw {
+        status: 403,
+        statusMessage: 'Slow down, your account has been disabled due to frequent login attempt.',
+      };
+    }
+    res.json(true);
+  } catch (err) {
+    res.status(err.status).json({ message: err.statusMessage });
+  }
+});
+
+/**
+ *
+ * POST / refresh user
+ */
 router.post('/refresh', async (req, res, next) => {
   const userId = req.body.user_id;
   const refreshToken = req.body.refresh_token;
@@ -29,22 +66,19 @@ router.post('/refresh', async (req, res, next) => {
   }
 });
 
+/**
+ *
+ * POST / logout
+ */
 router.post('/logout', authenticate, async (req, res, next) => {
   const userId = req.userId;
-  const refreshToken = req.body.refreshToken;
-  console.log(userId, refreshToken);
+  const refreshToken = req.body.refresh_token;
   try {
     const response = await AuthService.logout(userId, refreshToken);
-    console.log('response here', response);
-    if (response) {
-      res.status(200).json(response);
-    } else {
-      res.status(400).json({
-        message: 'Not logged out',
-      });
-    }
+    res.status(200).json(response.message);
   } catch (err) {
-    console.log(err);
+    res.status(err.status).json(err.message);
   }
 });
+
 export default router;

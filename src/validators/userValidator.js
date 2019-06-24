@@ -3,8 +3,16 @@ import validate from '../utils/validate';
 import * as userService from '../services/userService';
 
 const SCHEMA = {
+  first_name: Joi.string()
+    .label('First Name')
+    .max(90)
+    .required(),
+  last_name: Joi.string()
+    .label('Last Name')
+    .max(90)
+    .required(),
   user_name: Joi.string()
-    .label('Name')
+    .label('User Name')
     .max(90)
     .required(),
   user_email: Joi.string()
@@ -18,6 +26,12 @@ const SCHEMA = {
   domain_name: Joi.string()
     .label('Domain Name')
     .max(1000),
+  company_name: Joi.string()
+    .label('Company Name')
+    .max(300),
+  phone: Joi.string()
+    .label('Phone Number')
+    .max(300),
 };
 
 /**

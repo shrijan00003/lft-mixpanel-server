@@ -1,5 +1,6 @@
 import * as jwtUtils from '../utils/jwtUtils';
 import ClientDetails from '../models/clientDetails';
+import HttpStatus from 'http-status-codes';
 
 /**
  * Create new Client Details.
@@ -7,12 +8,20 @@ import ClientDetails from '../models/clientDetails';
  * @param  {Object}  Client Details
  * @return {Promise}
  */
-export async function createClientDetails(userId, domainName) {
+export async function createClientDetails(userId, clientDetails) {
   return new ClientDetails({
-    client_id: await jwtUtils.createClientId(),
-    domain_name: domainName,
-    user_id: userId,
+    clientId: await jwtUtils.createClientId(),
+    domainName: clientDetails.domain_name,
+    companyName: clientDetails.company_name,
+    userId: userId,
   })
     .save()
-    .then(clientDetails => clientDetails.refresh());
+    .then(clientDetails => clientDetails.refresh())
+    .catch(err => {
+      throw {
+        status: HttpStatus.CONFLICT,
+        statusMessage: 'Details not added due to database server conflict. Please try again.',
+        err,
+      };
+    });
 }

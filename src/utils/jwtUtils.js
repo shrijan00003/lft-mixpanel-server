@@ -1,32 +1,35 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { SALT_WORK_FACTOR } from '../constants/auth';
-import uid from 'uuid/v4';
+import uid from 'uuid/v1';
 
 const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
 // const salt = "123";
 
 export async function getHash(pass) {
-  const hashedOne = await bcrypt.hash(pass, salt);
+  const hashedOne = await bcrypt.hashSync(pass, salt);
 
   return hashedOne;
 }
 
 export async function verifyUser(password, user) {
   const dbPass = user.attributes.password;
-  const match = await bcrypt.compare(password, dbPass);
+  const match = await bcrypt.compareSync(password, dbPass);
 
   return match;
 }
 
 export function createAccessToken(data) {
   return jwt.sign({ data }, process.env.ACCESS_TOKEN_CONST, {
-    expiresIn: 60 * 1,
+    expiresIn: 60 * 60, // 1 hour
   });
 }
 
-export function createRefreshToken() {
-  return uid();
+export function createRefreshToken(data) {
+  // return uid();
+  return jwt.sign({ data }, process.env.REFRESH_TOKEN_CONST, {
+    expiresIn: 60 * 60 * 24, // 1 DAY
+  });
 }
 
 export function verifyAccessToken(token) {
@@ -38,3 +41,15 @@ export function verifyAccessToken(token) {
 export const createClientId = () => {
   return uid();
 };
+
+export function createEmailVerificationToken(userId, userEmail) {
+  return jwt.sign({ userId, userEmail }, process.env.EMAIL_VERIFICATION_CONST, {
+    expiresIn: 60 * 60 * 24 * 30, // 30 DAYS
+  });
+}
+
+export function verifyEmail(token) {
+  const res = jwt.verify(token, process.env.EMAIL_VERIFICATION_CONST);
+
+  return res;
+}
